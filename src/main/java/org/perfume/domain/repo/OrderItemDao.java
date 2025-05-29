@@ -1,14 +1,15 @@
 package org.perfume.domain.repo;
+
 import org.perfume.domain.entity.OrderItem;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
-public interface OrderItemDao {
+
+@Repository
+public interface OrderItemDao extends JpaRepository<OrderItem, Long> {
     List<OrderItem> findByOrderId(Long orderId);
 
     // Konkret məhsulun satış tarixi - ADMIN

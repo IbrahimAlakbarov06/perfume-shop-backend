@@ -1,14 +1,17 @@
 package org.perfume.domain.repo;
 
 import org.perfume.domain.entity.CartItem;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface CartItemDao {
+@Repository
+public interface CartItemDao extends JpaRepository<CartItem, Long> {
 
     // Səbətdə məhsulun olub-olmadığını yoxla (USER)
     Optional<CartItem> findByCartIdAndPerfumeId(Long cartId, Long perfumeId);
