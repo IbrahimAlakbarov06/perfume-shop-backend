@@ -15,8 +15,6 @@ public interface CartDao extends JpaRepository<Cart, Long> {
     // İstifadəçinin səbətini tap (USER)
     Optional<Cart> findUserId(Long id);
 
-    boolean existsByUserId(Long id);
-
     // İstifadəçinin səbətini items ilə birlikdə gətir
     @Query("select c from Cart c left join fetch c.items ci left join fetch ci.perfume where c.user.id = :userId")
     List<Cart> findByUserIdWithItems(@Param("userId") Long userId);
