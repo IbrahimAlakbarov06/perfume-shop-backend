@@ -48,6 +48,23 @@ public class User {
     @Column(nullable = false)
     private UserRole role = UserRole.USER;
 
+    // Email verification fields
+    @Column(name = "is_verified")
+    private boolean isVerified = false;
+
+    @Column(name = "verification_code")
+    private String verificationCode;
+
+    @Column(name = "verification_code_expires_at")
+    private LocalDateTime verificationCodeExpiresAt;
+
+    // Password reset fields
+    @Column(name = "password_reset_code")
+    private String passwordResetCode;
+
+    @Column(name = "password_reset_code_expires_at")
+    private LocalDateTime passwordResetCodeExpiresAt;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
 
@@ -66,5 +83,28 @@ public class User {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    // Helper methods for verification
+    public boolean isVerificationCodeValid() {
+        return verificationCode != null &&
+                verificationCodeExpiresAt != null &&
+                verificationCodeExpiresAt.isAfter(LocalDateTime.now());
+    }
+
+    public boolean isPasswordResetCodeValid() {
+        return passwordResetCode != null &&
+                passwordResetCodeExpiresAt != null &&
+                passwordResetCodeExpiresAt.isAfter(LocalDateTime.now());
+    }
+
+    public void clearVerificationCode() {
+        this.verificationCode = null;
+        this.verificationCodeExpiresAt = null;
+    }
+
+    public void clearPasswordResetCode() {
+        this.passwordResetCode = null;
+        this.passwordResetCodeExpiresAt = null;
     }
 }
