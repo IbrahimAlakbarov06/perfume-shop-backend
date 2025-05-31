@@ -12,6 +12,7 @@ import org.perfume.model.dto.response.CheckoutResponse;
 import org.perfume.model.dto.response.OrderResponse;
 import org.perfume.model.enums.OrderStatus;
 import org.perfume.service.CartService;
+import org.perfume.service.EmailService;
 import org.perfume.service.OrderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -40,10 +41,10 @@ public class OrderServiceImpl implements OrderService {
     private final UserDao userDao;
     private final PerfumeDao perfumeDao;
     private final OrderMapper orderMapper;
+    private final EmailService emailService;
 
     @Value("${app.whatsapp.business-number:994775099979}")
     private String businessWhatsappNumber;
-
 
     public CheckoutResponse checkout(Long userId, OrderRequest orderRequest) {
         User user = userDao.findById(userId)
@@ -62,8 +63,19 @@ public class OrderServiceImpl implements OrderService {
         String whatsappMessage = createWhatsAppMessage(order);
         String whatsappLink = createWhatsAppLink(whatsappMessage);
 
-        cartService.clearCart(userId);
+        try {
+            String orderDetails = createOrderDetailsForEmail(order);
+            emailService.sendOrderConfirmationEmail(
+                    user.getEmail(),
+                    order.getId().toString(),
+                    orderDetails
+            );
+            log.info("Order confirmation email sent to: {}", user.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send order confirmation email to: {}", user.getEmail(), e);
+        }
 
+        cartService.clearCart(userId);
         updateProductStock(cartItems);
 
         OrderResponse orderResponse = orderMapper.toDto(order);
@@ -74,6 +86,7 @@ public class OrderServiceImpl implements OrderService {
                 orderResponse
         );
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -177,32 +190,27 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.countByStatus(status);
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public List<OrderItem> getOrderItems(Long orderId) {
-
         return orderItemDao.findByOrderId(orderId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<OrderItem> getProductSalesHistory(Long productId) {
-
         return orderItemDao.findByPerfumeId(productId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Object[]> getBestSellingProducts() {
-
         return orderItemDao.findBestSellingProducts();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<OrderItem> getRecentSoldProducts() {
-
         return orderItemDao.findRecentSoldProducts();
     }
 
@@ -217,7 +225,6 @@ public class OrderServiceImpl implements OrderService {
     public List<Object[]> getSalesByBrand() {
         return orderItemDao.findSalesByBrand();
     }
-
 
     private Order createOrder(User user, OrderRequest orderRequest, List<CartItem> cartItems) {
         Order order = new Order();
@@ -300,5 +307,28 @@ public class OrderServiceImpl implements OrderService {
             log.error("Error creating WhatsApp link", e);
             return String.format("https://wa.me/%s", businessWhatsappNumber);
         }
+    }
+
+    private String createOrderDetailsForEmail(Order order) {
+        StringBuilder details = new StringBuilder();
+
+        for (OrderItem item : order.getItems()) {
+            details.append("- ").append(item.getProductName())
+                    .append(" (").append(item.getBrandName()).append(")")
+                    .append(" - Quantity: ").append(item.getQuantity())
+                    .append(" - Unit Price: ").append(item.getUnitPrice()).append(" AZN")
+                    .append(" - Total: ").append(item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()))).append(" AZN")
+                    .append("\n");
+        }
+
+        details.append("\nTotal Amount: ").append(order.getTotalAmount()).append(" AZN");
+        details.append("\nDelivery Address: ").append(order.getDeliveryAddress());
+        details.append("\nWhatsApp Number: ").append(order.getWhatsappNumber());
+
+        if (order.getCustomerNotes() != null && !order.getCustomerNotes().trim().isEmpty()) {
+            details.append("\nAdditional Notes: ").append(order.getCustomerNotes());
+        }
+
+        return details.toString();
     }
 }
