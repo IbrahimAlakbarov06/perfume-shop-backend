@@ -10,3 +10,36 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+
+  # Email Configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ibrahim.alakbarov2006@gmail.com
+    password: ${GMAIL_APP_PASSWORD:your-app-password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        transport:
+          protocol: smtp
+    test-connection: false
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+  expiration: ${JWT_EXPIRATION:86400000} # 24 hours
+
+# Server Configuration
+server:
+  port: 8080
+
+# Logging
+logging:
+  level:
+    org.perfume: DEBUG
+    org.springframework.mail: DEBUG
+    org.springframework.security: DEBUG
