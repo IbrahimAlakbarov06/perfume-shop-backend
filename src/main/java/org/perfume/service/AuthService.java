@@ -35,15 +35,12 @@ public class AuthService {
     private static final long VERIFICATION_CODE_EXPIRY_MINUTES = 15;
     private static final long PASSWORD_RESET_CODE_EXPIRY_MINUTES = 30;
 
-    // User registration
     @Transactional
     public MessageResponse register(RegisterRequest request) {
-        // Check if email already exists
         if (userService.existsByEmail(request.getEmail())) {
             throw new AlreadyExistsException("Email already exists: " + request.getEmail());
         }
 
-        // Create new user
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
@@ -54,54 +51,43 @@ public class AuthService {
                 .isGoogleUser(false)
                 .build();
 
-        // Generate and set verification code
         String verificationCode = generateVerificationCode();
         user.setVerificationCode(verificationCode);
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(VERIFICATION_CODE_EXPIRY_MINUTES));
 
-        // Save user
         User savedUser = userService.saveUser(user);
 
-        // Send verification email
         sendVerificationEmail(savedUser.getEmail(), savedUser.getName(), verificationCode);
 
         log.info("User registered successfully with email: {}", request.getEmail());
         return MessageResponse.of("Registration successful. Please check your email for verification code.");
     }
 
-    // User login
     public AuthResponse login(LoginRequest request) {
         User user = userService.findUserByEmail(request.getEmail());
 
-        // Check password
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new InvalidInputException("Invalid email or password");
         }
 
-        // Check if user is verified
         if (!user.isVerified()) {
             throw new InvalidInputException("Please verify your email before logging in");
         }
 
-        // Generate JWT token
         String token = jwtService.generateToken(user.getEmail());
         UserResponse userResponse = userMapper.toDto(user);
 
-        log.info("User logged in successfully: {}", request.getEmail());
         return new AuthResponse(token, userResponse);
     }
 
-    // Verify user email
     @Transactional
     public MessageResponse verifyUser(VerifyUserRequest request) {
         User user = userService.findUserByEmail(request.getEmail());
 
-        // Check if user is already verified
         if (user.isVerified()) {
             throw new InvalidInputException("User is already verified");
         }
 
-        // Check verification code
         if (!user.isVerificationCodeValid()) {
             throw new InvalidInputException("Invalid or expired verification code");
         }
@@ -110,43 +96,34 @@ public class AuthService {
             throw new InvalidInputException("Invalid verification code");
         }
 
-        // Verify user and clear verification code
         user.setVerified(true);
         user.clearVerificationCode();
         userService.saveUser(user);
 
-        // Send welcome email
         emailService.sendWelcomeEmail(user.getEmail(), user.getName());
 
-        log.info("User verified successfully: {}", request.getEmail());
         return MessageResponse.of("Email verified successfully. Welcome to Perfume Shop!");
     }
 
-    // Resend verification code
     @Transactional
     public MessageResponse resendVerificationCode(String email) {
         User user = userService.findUserByEmail(email);
 
-        // Check if user is already verified
         if (user.isVerified()) {
             throw new InvalidInputException("User is already verified");
         }
 
-        // Generate new verification code
         String verificationCode = generateVerificationCode();
         user.setVerificationCode(verificationCode);
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(VERIFICATION_CODE_EXPIRY_MINUTES));
 
         userService.saveUser(user);
 
-        // Send verification email
         sendVerificationEmail(user.getEmail(), user.getName(), verificationCode);
 
-        log.info("Verification code resent to: {}", email);
         return MessageResponse.of("Verification code sent to your email");
     }
 
-    // Send verification email
     public void sendVerificationEmail(String email, String name, String verificationCode) {
         String subject = "Verify Your Email - Perfume Shop";
         String body = String.format(
@@ -163,7 +140,6 @@ public class AuthService {
         emailService.sendEmail(email, subject, body);
     }
 
-    // Generate verification code
     public String generateVerificationCode() {
         Random random = new Random();
         StringBuilder code = new StringBuilder();
@@ -173,26 +149,21 @@ public class AuthService {
         return code.toString();
     }
 
-    // Initiate password reset
     @Transactional
     public MessageResponse initiatePasswordReset(PasswordResetRequest request) {
         User user = userService.findUserByEmail(request.getEmail());
 
-        // Generate reset code
         String resetCode = generateVerificationCode();
         user.setPasswordResetCode(resetCode);
         user.setPasswordResetCodeExpiresAt(LocalDateTime.now().plusMinutes(PASSWORD_RESET_CODE_EXPIRY_MINUTES));
 
         userService.saveUser(user);
 
-        // Send password reset email
         sendPasswordResetEmail(user.getEmail(), user.getName(), resetCode);
 
-        log.info("Password reset initiated for: {}", request.getEmail());
         return MessageResponse.of("Password reset code sent to your email");
     }
 
-    // Verify reset code
     public MessageResponse verifyResetCode(String email, String resetCode) {
         User user = userService.findUserByEmail(email);
 
@@ -207,12 +178,10 @@ public class AuthService {
         return MessageResponse.of("Reset code verified successfully");
     }
 
-    // Reset password
     @Transactional
     public MessageResponse resetPassword(PasswordResetConfirmRequest request) {
         User user = userService.findUserByEmail(request.getEmail());
 
-        // Verify reset code
         if (!user.isPasswordResetCodeValid()) {
             throw new InvalidInputException("Invalid or expired reset code");
         }
@@ -221,16 +190,13 @@ public class AuthService {
             throw new InvalidInputException("Invalid reset code");
         }
 
-        // Update password
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         user.clearPasswordResetCode();
         userService.saveUser(user);
 
-        log.info("Password reset successfully for: {}", request.getEmail());
         return MessageResponse.of("Password reset successfully");
     }
 
-    // Send password reset email
     public void sendPasswordResetEmail(String email, String name, String resetCode) {
         String subject = "Password Reset - Perfume Shop";
         String body = String.format(
@@ -247,23 +213,19 @@ public class AuthService {
         emailService.sendEmail(email, subject, body);
     }
 
-    // Google OAuth registration/login
     @Transactional
     public AuthResponse googleAuth(String email, String name) {
         User user;
 
         try {
-            // Try to find existing user
             user = userService.findUserByEmail(email);
 
-            // Update Google user flag if not set
             if (!user.isGoogleUser()) {
                 user.setGoogleUser(true);
-                user.setVerified(true); // Google users are automatically verified
+                user.setVerified(true);
                 userService.saveUser(user);
             }
         } catch (NotFoundException e) {
-            // Create new Google user
             user = User.builder()
                     .name(name)
                     .email(email)
@@ -275,21 +237,16 @@ public class AuthService {
 
             user = userService.saveUser(user);
 
-            // Send welcome email
             emailService.sendWelcomeEmail(user.getEmail(), user.getName());
 
-            log.info("New Google user registered: {}", email);
         }
 
-        // Generate JWT token
         String token = jwtService.generateToken(user.getEmail());
         UserResponse userResponse = userMapper.toDto(user);
 
-        log.info("Google user authenticated: {}", email);
         return new AuthResponse(token, userResponse);
     }
 
-    // Get current user from token
     public UserResponse getCurrentUser(String email) {
         User user = userService.findUserByEmail(email);
         return userMapper.toDto(user);
