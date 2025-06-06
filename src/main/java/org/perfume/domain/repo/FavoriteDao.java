@@ -15,29 +15,21 @@ public interface FavoriteDao extends JpaRepository<Favorite, Long> {
 
     Optional<Favorite> findByUserIdAndPerfumeId(Long userId, Long perfumeId);
 
-    // Məhsulun favori olub-olmadığını yoxlamaq - USER
     boolean existsByUserIdAndPerfumeId(Long userId, Long perfumeId);
 
-    // Konkret məhsulu favori edənlər - ADMIN
     List<Favorite> findByPerfumeId(Long perfumeId);
 
-    // Ən çox favori edilən məhsullar - ADMIN
-    @Query("SELECT f.perfume.id, COUNT(f) as favoriteCount FROM Favorite f GROUP BY f.perfume.id ORDER BY favoriteCount DESC")
+    @Query("select f.perfume.id, count(f) as favoriteCount from Favorite f group by f.perfume.id order by favoriteCount desc ")
     List<Object[]> findMostFavoritedProducts();
 
-    // İstifadəçinin favori sayı - USER
-    @Query("SELECT COUNT(f) FROM Favorite f WHERE f.user.id = :userId")
+    @Query("select count (f) from Favorite f where f.user.id = :userId")
     Long countByUserId(@Param("userId") Long userId);
 
-    // Məhsulun favori sayı - PUBLIC
-    @Query("SELECT COUNT(f) FROM Favorite f WHERE f.perfume.id = :perfumeId")
+    @Query("select count (f) from Favorite f where f.perfume.id = :perfumeId")
     Long countByPerfumeId(@Param("perfumeId") Long perfumeId);
 
-    // Sevimli məhsulu sil (USER)
     void deleteByUserIdAndPerfumeId(Long userId, Long perfumeId);
 
-    // Müəyyən brendin sevimli məhsulları (USER/ADMIN)
-    @Query("SELECT f FROM Favorite f WHERE f.perfume.brand.id = :brandId AND f.user.id = :userId")
+    @Query("select f from Favorite f where f.perfume.brand.id = :brandId and f.user.id = :userId")
     List<Favorite> findUserFavoritesByBrand(@Param("userId") Long userId, @Param("brandId") Long brandId);
-
 }

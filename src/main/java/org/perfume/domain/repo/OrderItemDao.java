@@ -12,24 +12,18 @@ import java.util.List;
 public interface OrderItemDao extends JpaRepository<OrderItem, Long> {
     List<OrderItem> findByOrderId(Long orderId);
 
-    // Konkret məhsulun satış tarixi - ADMIN
     List<OrderItem> findByPerfumeId(Long perfumeId);
 
-    // Ən çox satılan məhsullar - ADMIN
-    @Query("SELECT oi.perfume.id, oi.productName, SUM(oi.quantity) as totalSold FROM OrderItem oi GROUP BY oi.perfume.id, oi.productName ORDER BY totalSold DESC")
+    @Query("select oi.perfume.id, oi.productName, SUM(oi.quantity) as totalSold from OrderItem oi group by oi.perfume.id, oi.productName order by totalSold desc ")
     List<Object[]> findBestSellingProducts();
 
-    // Son satılan məhsullar (ADMIN)
-    @Query("SELECT oi FROM OrderItem oi ORDER BY oi.order.createdAt DESC")
+    @Query("select oi from OrderItem oi order by oi.order.createdAt desc ")
     List<OrderItem> findRecentSoldProducts();
 
-    // Müəyyən məhsulun nə qədər satıldığı (ADMIN)
-    @Query("SELECT COALESCE(SUM(oi.quantity), 0) FROM OrderItem oi WHERE oi.perfume.id = :perfumeId")
+    @Query("select coalesce(sum(oi.quantity), 0) from OrderItem oi where oi.perfume.id = :perfumeId")
     Long getTotalSoldQuantityByPerfumeId(@Param("perfumeId") Long perfumeId);
 
-    // Brendə görə satış statistikası (ADMIN)
-    @Query("SELECT oi.brandName, SUM(oi.quantity) as totalSold, SUM(oi.quantity * oi.unitPrice) as totalRevenue " +
-            "FROM OrderItem oi GROUP BY oi.brandName ORDER BY totalRevenue DESC")
+    @Query("select oi.brandName, sum(oi.quantity) as totalSold, sum(oi.quantity * oi.unitPrice) as totalRevenue " +
+            "from OrderItem oi group by oi.brandName order by totalRevenue desc ")
     List<Object[]> findSalesByBrand();
-
 }

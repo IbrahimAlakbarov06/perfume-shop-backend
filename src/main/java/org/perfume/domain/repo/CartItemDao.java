@@ -13,31 +13,22 @@ import java.util.Optional;
 @Repository
 public interface CartItemDao extends JpaRepository<CartItem, Long> {
 
-    // Səbətdə məhsulun olub-olmadığını yoxla (USER)
     Optional<CartItem> findByCartIdAndPerfumeId(Long cartId, Long perfumeId);
 
-    // Müəyyən məhsulun hansı səbətlərdə olduğunu tap (ADMIN)
     List<CartItem> findByPerfumeId(Long perfumeId);
 
     boolean existsByCartIdAndPerfumeId(Long cartId, Long perfumeId);
 
-    // İstifadəçinin səbətindəki məhsulları tap
-    @Query("SELECT ci FROM CartItem ci WHERE ci.cart.user.id = :userId")
+    @Query("select ci from CartItem ci where ci.cart.user.id = :userId")
     List<CartItem> findByUserId(@Param("userId") Long userId);
 
-    // Səbətdəki ümumi məhsul sayı (USER)
-    @Query("SELECT SUM(ci.quantity) FROM CartItem ci WHERE ci.cart.id = :cartId")
+    @Query("select sum(ci.quantity) from CartItem ci where ci.cart.id = :cartId")
     Integer getTotalQuantityByCartId(@Param("cartId") Long cartId);
 
-    // Ən çox səbətə əlavə edilən məhsullar (ADMIN)
-    @Query("SELECT ci.perfume.id, COUNT(ci) as count FROM CartItem ci GROUP BY ci.perfume.id ORDER BY count DESC")
+    @Query("select ci.perfume.id, count (ci) as count from CartItem ci group by ci.perfume.id order by count desc ")
     List<Object[]> findMostAddedProducts();
 
-    // Səbətdəki məhsulu sil
     void deleteByCartIdAndPerfumeId(Long cartId, Long perfumeId);
 
-    // Müəyyən istifadəçinin səbətindəki məhsulları sil (USER)
     void deleteByCartId(Long cartId);
-
-
 }

@@ -15,40 +15,30 @@ import java.util.Optional;
 
 @Repository
 public interface OrderDao extends JpaRepository<Order, Long> {
-    // İstifadəçinin sifarişləri (USER)
     List<Order> findByUserIdOrderByCreatedAtDesc(Long userId);
 
     Page<Order> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
-    // Status əsasında sifarişlər (ADMIN)
     List<Order> findByStatus(OrderStatus status);
 
-    // WhatsApp nömrəsi ilə axtarış (ADMIN)
     List<Order> findByWhatsappNumberContaining(String whatsappNumber);
 
-    // Məbləğ əsasında sifarişlər (ADMIN)
     List<Order> findByTotalAmountGreaterThan(BigDecimal amount);
 
-    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.items WHERE o.id = :orderId")
+    @Query("select o from Order o LEFT JOIN FETCH o.items where o.id = :orderId")
     Order findByIdWithItems(@Param("orderId") Long orderId);
 
-    // Son sifarişlər - ADMIN
-    @Query("SELECT o FROM Order o ORDER BY o.createdAt DESC")
+    @Query("select o from Order o order by o.createdAt desc ")
     Page<Order> findLatestOrders(Pageable pageable);
 
-    // İstifadəçinin son sifarişi - USER
-    @Query("SELECT o FROM Order o WHERE o.user.id = :userId ORDER BY o.createdAt DESC LIMIT 1")
+    @Query("select o from Order o where o.user.id = :userId order by o.createdAt desc limit 1")
     Optional<Order> findLatestOrderByUserId(@Param("userId") Long userId);
 
-    // Ən çox sifariş verən istifadəçilər (ADMIN)
-    @Query("SELECT o.user, COUNT(o) as orderCount FROM Order o GROUP BY o.user ORDER BY orderCount DESC")
+    @Query("select o.user, count (o) as orderCount from Order o group by o.user order by orderCount desc ")
     List<Object[]> findTopCustomers(Pageable pageable);
 
-    // İstifadəçinin ümumi xərclədiyi məbləğ
-    @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o WHERE o.user.id = :userId")
+    @Query("select coalesce(sum(o.totalAmount), 0) from Order o where o.user.id = :userId")
     BigDecimal getTotalAmountByUserId(@Param("userId") Long userId);
 
-    // Sifarişlərin sayı (ADMIN)
     Long countByStatus(OrderStatus status);
-
 }

@@ -12,31 +12,22 @@ import java.util.Optional;
 
 @Repository
 public interface UserDao extends JpaRepository<User, Long> {
-    // Login və authentication üçün - USER və ADMIN
     Optional<User> findByEmail(String email);
 
-    // Email mövcudluğunu yoxlamaq üçün - PUBLIC
     boolean existsByEmail(String email);
 
-    // Google istifadəçilərini tapmaq üçün - USER və ADMIN
     List<User> findByIsGoogleUserTrue();
 
-    // Rola görə istifadəçiləri tapmaq - ADMIN
     List<User> findByRole(UserRole role);
 
-    // Telefon nömrəsi ilə axtarış - ADMIN
     Optional<User> findByPhoneNumber(String phoneNumber);
 
-    // Admin üçün istifadəçi axtarışı (ADMIN)
-    @Query("SELECT u FROM User u WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))")
+    @Query("select u from User u where lower(u.name) LIKE lower(concat('%', :name, '%') ) or lower(u.email) like lower(concat('%', :email, '%') ) ")
     List<User> findByNameOrEmailContaining(@Param("name") String name, @Param("email") String email);
 
-    // Son qeydiyyat olanlar - ADMIN
-    @Query("SELECT u FROM User u ORDER BY u.createdAt DESC")
+    @Query("select u from User u order by u.createdAt desc ")
     List<User> findRecentlyRegistered();
 
-    // Aktiv sifarişi olan istifadəçilər - ADMIN
-    @Query("SELECT DISTINCT u FROM User u JOIN u.orders o WHERE o.status != 'CANCELLED'")
+    @Query("select distinct u from User u join u.orders o where o.status != 'CANCELLED'")
     List<User> findUsersWithActiveOrders();
-
 }
