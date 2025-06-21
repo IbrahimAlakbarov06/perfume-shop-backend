@@ -1,45 +1,62 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: perfume-shop
+
   datasource:
     url: jdbc:postgresql://localhost:5432/perfume_shop
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
-      ddl-auto: create
-    show-sql: true
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
 
-  # Email Configuration
   mail:
     host: smtp.gmail.com
     port: 587
     username: ibrahim.alakbarov2006@gmail.com
-    password: ${GMAIL_APP_PASSWORD:your-app-password}
+    password: lysu snmq hvgy dbbx
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
-            required: true
-        transport:
-          protocol: smtp
-    test-connection: false
 
-# JWT Configuration
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 71058940819-q9fdkhb140msdgojrsmkphkhgh7ju3b7.apps.googleusercontent.com
+            client-secret: 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
+            scope: email,profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
 jwt:
-  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
-  expiration: ${JWT_EXPIRATION:86400000} # 24 hours
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000
 
-# Server Configuration
-server:
-  port: 8080
+app:
+  whatsapp:
+    business-number: 994775099979
 
-# Logging
 logging:
   level:
     org.perfume: DEBUG
     org.springframework.mail: DEBUG
-    org.springframework.security: DEBUG
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
