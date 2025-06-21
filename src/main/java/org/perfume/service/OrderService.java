@@ -50,6 +50,4 @@ public interface OrderService {
     Long getProductTotalSold(Long productId);
 
     List<Object[]> getSalesByBrand();
-
-
 }
