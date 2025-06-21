@@ -48,7 +48,6 @@ public class User {
     @Column(nullable = false)
     private UserRole role = UserRole.USER;
 
-    // Email verification fields
     @Column(name = "is_verified")
     private boolean isVerified = false;
 
@@ -58,7 +57,6 @@ public class User {
     @Column(name = "verification_code_expires_at")
     private LocalDateTime verificationCodeExpiresAt;
 
-    // Password reset fields
     @Column(name = "password_reset_code")
     private String passwordResetCode;
 
@@ -85,7 +83,6 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Helper methods for verification
     public boolean isVerificationCodeValid() {
         return verificationCode != null &&
                 verificationCodeExpiresAt != null &&

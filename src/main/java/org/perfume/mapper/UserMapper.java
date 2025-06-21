@@ -19,7 +19,8 @@ public class UserMapper implements EntityMapper<User, UserResponse> {
                 entity.getEmail(),
                 entity.getPhoneNumber(),
                 entity.getRole(),
-                entity.isGoogleUser()
+                entity.isGoogleUser(),
+                entity.isVerified()
         );
     }
 
@@ -36,6 +37,7 @@ public class UserMapper implements EntityMapper<User, UserResponse> {
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setRole(dto.getRole());
         user.setGoogleUser(dto.isGoogleUser());
+        user.setVerified(dto.isVerified());
         return user;
     }
 }

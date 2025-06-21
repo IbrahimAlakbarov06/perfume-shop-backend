@@ -15,4 +15,5 @@ public class UserResponse {
     private String phoneNumber;
     private UserRole role;
     private boolean isGoogleUser;
+    private boolean isVerified;
 }
