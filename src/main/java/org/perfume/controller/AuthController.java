@@ -10,7 +10,6 @@ import org.perfume.model.dto.response.MessageResponse;
 import org.perfume.model.dto.response.UserResponse;
 import org.perfume.service.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,13 +53,6 @@ public class AuthController {
     @Operation(summary = "Initiate password reset")
     public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody PasswordResetRequest request) {
         MessageResponse response = authService.initiatePasswordReset(request);
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/verify-reset-code")
-    @Operation(summary = "Verify password reset code")
-    public ResponseEntity<MessageResponse> verifyResetCode(@RequestParam String email, @RequestParam String resetCode) {
-        MessageResponse response = authService.verifyResetCode(email, resetCode);
         return ResponseEntity.ok(response);
     }
 

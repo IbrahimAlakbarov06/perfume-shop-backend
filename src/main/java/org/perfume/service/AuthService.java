@@ -164,20 +164,6 @@ public class AuthService {
         return MessageResponse.of("Password reset code sent to your email");
     }
 
-    public MessageResponse verifyResetCode(String email, String resetCode) {
-        User user = userService.findUserByEmail(email);
-
-        if (!user.isPasswordResetCodeValid()) {
-            throw new InvalidInputException("Invalid or expired reset code");
-        }
-
-        if (!user.getPasswordResetCode().equals(resetCode)) {
-            throw new InvalidInputException("Invalid reset code");
-        }
-
-        return MessageResponse.of("Reset code verified successfully");
-    }
-
     @Transactional
     public MessageResponse resetPassword(PasswordResetConfirmRequest request) {
         User user = userService.findUserByEmail(request.getEmail());
