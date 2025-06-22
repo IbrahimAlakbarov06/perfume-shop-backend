@@ -1,7 +1,6 @@
 package org.perfume.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) throws IOException, ServletException {
+                         AuthenticationException authException) throws IOException {
 
         log.error("Unauthorized error: {}", authException.getMessage());
 
@@ -30,7 +29,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         final Map<String, Object> body = new HashMap<>();
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
         body.put("error", "Unauthorized");
-        body.put("message", "Authentication required");
+        body.put("message", "Access denied - Authentication required");
         body.put("path", request.getServletPath());
 
         final ObjectMapper mapper = new ObjectMapper();
