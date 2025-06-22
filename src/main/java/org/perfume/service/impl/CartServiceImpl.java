@@ -181,7 +181,7 @@ public class CartServiceImpl implements CartService {
     }
 
     private Cart getOrCreateCart(User user) {
-        Optional<Cart> cartOpt = cartDao.findUserId(user.getId());
+        Optional<Cart> cartOpt = cartDao.findByUserId(user.getId());
 
         if (cartOpt.isPresent()) {
             return cartOpt.get();

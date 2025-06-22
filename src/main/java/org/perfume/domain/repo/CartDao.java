@@ -12,7 +12,11 @@ import java.util.Optional;
 @Repository
 public interface CartDao extends JpaRepository<Cart, Long> {
 
-    Optional<Cart> findUserId(Long id);
+    Optional<Cart> findByUserId(Long userId);
+
+    // Option 2: Alternative - use custom query (if you prefer explicit queries)
+    // @Query("SELECT c FROM Cart c WHERE c.user.id = :userId")
+    // Optional<Cart> findByUserId(@Param("userId") Long userId);
 
     @Query("select c from Cart c left join fetch c.items ci left join fetch ci.perfume where c.user.id = :userId")
     List<Cart> findByUserIdWithItems(@Param("userId") Long userId);
