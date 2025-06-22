@@ -1,5 +1,6 @@
 package org.perfume.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.perfume.model.dto.request.*;
 import org.perfume.model.dto.response.AuthResponse;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Authentication related endpoints")
 public class AuthController {
 
     private final AuthService authService;
