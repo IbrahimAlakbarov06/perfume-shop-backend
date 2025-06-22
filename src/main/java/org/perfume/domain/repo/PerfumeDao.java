@@ -31,9 +31,9 @@ public interface PerfumeDao extends JpaRepository<Perfume, Long> {
 
     List<Perfume> findByGender(Gender gender);
 
-    List<Perfume> findByFeaturedTrue();
+    List<Perfume> findByIsFeaturedTrue();
 
-    List<Perfume> findByBestsellerTrue();
+    List<Perfume> findByIsBestsellerTrue();
 
     @Query("select p from Perfume p where p.stockQuantity>0")
     List<Perfume> findInStockQuantity();
