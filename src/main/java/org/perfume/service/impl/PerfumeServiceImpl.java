@@ -181,7 +181,7 @@ public class PerfumeServiceImpl implements PerfumeService {
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> getFeaturedPerfumes() {
-        return perfumeDao.findByFeaturedTrue().stream()
+        return perfumeDao.findByIsFeaturedTrue().stream()
                 .map(perfumeMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -189,7 +189,7 @@ public class PerfumeServiceImpl implements PerfumeService {
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> getBestsellerPerfumes() {
-        return perfumeDao.findByBestsellerTrue().stream()
+        return perfumeDao.findByIsBestsellerTrue().stream()
                 .map(perfumeMapper::toDto)
                 .collect(Collectors.toList());
     }
