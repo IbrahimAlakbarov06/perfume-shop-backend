@@ -112,9 +112,6 @@ public class PerfumeServiceImpl implements PerfumeService {
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> searchPerfumesByName(String name) {
-        if (!perfumeDao.existsByName(name)) {
-            throw new NotFoundException("Perfume not found with name: " + name);
-        }
         return perfumeDao.findByNameContainingIgnoreCase(name).stream()
                 .map(perfumeMapper::toDto)
                 .collect(Collectors.toList());

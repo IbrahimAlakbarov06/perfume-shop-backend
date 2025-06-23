@@ -94,10 +94,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public List<CategoryResponse> searchCategories(String name) {
-        if(!categoryDao.existsByName(name)) {
-            throw new NotFoundException("Category with name " + name + " not found");
-        }
-
         return categoryDao.findByNameContainingIgnoreCase(name).stream()
                 .map(categoryMapper::toDto)
                 .collect(Collectors.toList());
