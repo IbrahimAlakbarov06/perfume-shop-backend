@@ -3,10 +3,7 @@ package org.perfume.mapper;
 import org.perfume.domain.entity.Category;
 import org.perfume.model.dto.request.CategoryRequest;
 import org.perfume.model.dto.response.CategoryResponse;
-import org.perfume.model.dto.response.PerfumeResponse;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class CategoryMapper implements EntityMapper<Category, CategoryResponse> {
@@ -20,20 +17,8 @@ public class CategoryMapper implements EntityMapper<Category, CategoryResponse> 
         return new CategoryResponse(
                 entity.getId(),
                 entity.getName(),
-                entity.getDescription()
-        );
-    }
-
-    public CategoryResponse toDtoWithPerfumes(Category entity, List<PerfumeResponse> perfumes) {
-        if (entity == null) {
-            return null;
-        }
-
-        return new CategoryResponse(
-                entity.getId(),
-                entity.getName(),
                 entity.getDescription(),
-                perfumes
+                entity.getPerfumes() != null ? entity.getPerfumes().size() : 0
         );
     }
 

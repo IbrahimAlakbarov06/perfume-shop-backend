@@ -7,12 +7,11 @@ import org.perfume.model.enums.FragranceFamily;
 import org.perfume.model.enums.Gender;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PerfumeResponse {
+public class PerfumeSimpleResponse {
     private Long id;
     private String name;
     private String description;
@@ -20,10 +19,6 @@ public class PerfumeResponse {
     private BigDecimal discountedPrice;
     private String imageUrl;
     private Integer stockQuantity;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private BrandSimpleResponse brand;
-    private CategorySimpleResponse category;
     private boolean isFeatured;
     private boolean isBestseller;
     private Integer discountPercent;

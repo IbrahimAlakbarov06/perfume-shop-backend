@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.perfume.model.dto.request.BrandRequest;
 import org.perfume.model.dto.response.BrandResponse;
+import org.perfume.model.dto.response.PerfumeSimpleResponse;
 import org.perfume.service.BrandService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,11 +44,11 @@ public class BrandController {
         return ResponseEntity.ok(brands);
     }
 
-    @GetMapping("/with-perfumes")
-    @Operation(summary = "Get brands with perfumes")
-    public ResponseEntity<List<BrandResponse>> getBrandsWithPerfumes() {
-        List<BrandResponse> brands = brandService.getBrandsWithPerfumes();
-        return ResponseEntity.ok(brands);
+    @GetMapping("/{id}/perfumes")
+    @Operation(summary = "Get perfumes by brand")
+    public ResponseEntity<List<PerfumeSimpleResponse>> getPerfumesByBrand(@PathVariable("id") Long id) {
+        List<PerfumeSimpleResponse> perfumes = brandService.getPerfumesByBrand(id);
+        return ResponseEntity.ok(perfumes);
     }
 
     @PostMapping

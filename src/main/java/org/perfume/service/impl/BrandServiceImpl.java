@@ -11,6 +11,7 @@ import org.perfume.mapper.PerfumeMapper;
 import org.perfume.model.dto.request.BrandRequest;
 import org.perfume.model.dto.response.BrandResponse;
 import org.perfume.model.dto.response.PerfumeResponse;
+import org.perfume.model.dto.response.PerfumeSimpleResponse;
 import org.perfume.service.BrandService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,7 +88,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BrandResponse> getBrandsWithPerfumes() {
+    public List<PerfumeSimpleResponse> getPerfumesByBrand(Long id) {
         return brandDao.findBrandsWithPerfumes().stream()
                 .map(brand -> {
                     List<PerfumeResponse> perfumes = perfumeDao.findByBrandId(brand.getId())

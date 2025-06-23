@@ -11,6 +11,7 @@ import org.perfume.mapper.PerfumeMapper;
 import org.perfume.model.dto.request.CategoryRequest;
 import org.perfume.model.dto.response.CategoryResponse;
 import org.perfume.model.dto.response.PerfumeResponse;
+import org.perfume.model.dto.response.PerfumeSimpleResponse;
 import org.perfume.service.CategoryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +80,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryResponse> getCategoriesWithPerfumes() {
+    public List<PerfumeSimpleResponse> getPerfumesByCategory(Long id) {
         return categoryDao.findCategoriesWithPerfumes().stream()
                 .map(category -> {
                     List<PerfumeResponse> perfumes = perfumeDao.findByCategoryId(category.getId())

@@ -6,6 +6,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.perfume.model.dto.request.CategoryRequest;
 import org.perfume.model.dto.response.CategoryResponse;
+import org.perfume.model.dto.response.PerfumeResponse;
+import org.perfume.model.dto.response.PerfumeSimpleResponse;
 import org.perfume.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,11 +45,11 @@ public class CategoryController {
         return ResponseEntity.ok(categories);
     }
 
-    @GetMapping("/with-perfumes")
-    @Operation(summary = "Get categories with perfumes")
-    public ResponseEntity<List<CategoryResponse>> getCategoriesWithPerfumes() {
-        List<CategoryResponse> categories = categoryService.getCategoriesWithPerfumes();
-        return ResponseEntity.ok(categories);
+    @GetMapping("/{id}/perfumes")
+    @Operation(summary = "Get perfumes by category")
+    public ResponseEntity<List<PerfumeSimpleResponse>> getPerfumesByCategory(@PathVariable("id") Long id) {
+        List<PerfumeSimpleResponse> perfumes = categoryService.getPerfumesByCategory(id);
+        return ResponseEntity.ok(perfumes);
     }
 
     @PostMapping
