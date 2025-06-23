@@ -69,11 +69,20 @@ public class Perfume {
     @Column(name = "gender", nullable = false)
     private Gender gender;
 
+    @Column(name = "average_rating")
+    private Double averageRating = 0.0;
+
+    @Column(name = "rating_count")
+    private Long ratingCount = 0L;
+
     @OneToMany(mappedBy = "perfume", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItem> cartItems = new HashSet<>();
 
     @OneToMany(mappedBy = "perfume", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Favorite> favoritedBy = new HashSet<>();
+
+    @OneToMany(mappedBy = "perfume", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Rating> ratings = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {
@@ -93,5 +102,10 @@ public class Perfume {
 
         BigDecimal discountAmount = price.multiply(BigDecimal.valueOf(discountPercent / 100.0));
         return price.subtract(discountAmount);
+    }
+
+    public void updateRatingStats(Double averageRating, Long ratingCount) {
+        this.averageRating = averageRating != null ? averageRating : 0.0;
+        this.ratingCount = ratingCount != null ? ratingCount : 0L;
     }
 }
