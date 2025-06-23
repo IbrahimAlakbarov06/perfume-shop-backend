@@ -40,5 +40,12 @@ public interface OrderDao extends JpaRepository<Order, Long> {
     @Query("select coalesce(sum(o.totalAmount), 0) from Order o where o.user.id = :userId")
     BigDecimal getTotalAmountByUserId(@Param("userId") Long userId);
 
+    @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END " +
+            "FROM Order o JOIN o.items oi " +
+            "WHERE o.user.id = :userId AND oi.perfume.id = :perfumeId AND o.status = :status")
+    boolean existsByUserIdAndPerfumeIdAndStatus(@Param("userId") Long userId,
+                                                @Param("perfumeId") Long perfumeId,
+                                                @Param("status") OrderStatus status);
+
     Long countByStatus(OrderStatus status);
 }
