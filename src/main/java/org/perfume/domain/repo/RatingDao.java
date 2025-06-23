@@ -1,15 +1,14 @@
 package org.perfume.domain.repo;
 
 import org.perfume.domain.entity.Rating;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface RatingDao {
-    List<Rating> findByPerfumeId(Long perfumeId);
-
+public interface RatingDao extends JpaRepository<Rating, Long> {
     List<Rating> findByUserId(Long userId);
 
     Optional<Rating> findByUserIdAndPerfumeId(Long userId, Long perfumeId);
