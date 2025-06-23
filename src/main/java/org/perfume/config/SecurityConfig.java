@@ -42,13 +42,13 @@ public class SecurityConfig {
                         .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-resources/**", "/webjars/**").permitAll() // Add this line
 
-                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/perfumes/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/brands/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/perfumes/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/perfumes/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/perfumes/**").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/api/brands/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/brands/**").hasRole("ADMIN")
