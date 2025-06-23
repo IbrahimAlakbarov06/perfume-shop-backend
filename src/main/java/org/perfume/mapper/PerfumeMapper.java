@@ -1,16 +1,13 @@
 package org.perfume.mapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.mapper.Mapper;
-import org.perfume.domain.entity.Brand;
-import org.perfume.domain.entity.Category;
 import org.perfume.domain.entity.Perfume;
 import org.perfume.domain.repo.BrandDao;
 import org.perfume.domain.repo.CategoryDao;
 import org.perfume.exception.NotFoundException;
 import org.perfume.model.dto.request.PerfumeRequest;
 import org.perfume.model.dto.response.PerfumeResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.perfume.model.dto.response.PerfumeSimpleResponse;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -38,8 +35,30 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
                 entity.getStockQuantity(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
-                brandMapper.toDto(entity.getBrand()),
-                categoryMapper.toDto(entity.getCategory()),
+                brandMapper.toSimpleDto(entity.getBrand()),
+                categoryMapper.toSimpleDto(entity.getCategory()),
+                entity.isFeatured(),
+                entity.isBestseller(),
+                entity.getDiscountPercent(),
+                entity.getFragranceFamily(),
+                entity.getGender(),
+                false
+        );
+    }
+
+    public PerfumeSimpleResponse toSimpleDto(Perfume entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        return new PerfumeSimpleResponse(
+                entity.getId(),
+                entity.getName(),
+                entity.getDescription(),
+                entity.getPrice(),
+                entity.getDiscountedPrice(),
+                entity.getImageUrl(),
+                entity.getStockQuantity(),
                 entity.isFeatured(),
                 entity.isBestseller(),
                 entity.getDiscountPercent(),

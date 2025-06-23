@@ -3,6 +3,7 @@ package org.perfume.mapper;
 import org.perfume.domain.entity.Category;
 import org.perfume.model.dto.request.CategoryRequest;
 import org.perfume.model.dto.response.CategoryResponse;
+import org.perfume.model.dto.response.CategorySimpleResponse;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,7 +18,7 @@ public class CategoryMapper implements EntityMapper<Category, CategoryResponse> 
         return new CategoryResponse(
                 entity.getId(),
                 entity.getName(),
-                entity.getDescription(),
+                entity.getDescription()
         );
     }
 
@@ -43,5 +44,16 @@ public class CategoryMapper implements EntityMapper<Category, CategoryResponse> 
         category.setName(request.getName());
         category.setDescription(request.getDescription());
         return category;
+    }
+
+    public CategorySimpleResponse toSimpleDto(Category entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        return new CategorySimpleResponse(
+                entity.getId(),
+                entity.getName()
+        );
     }
 }

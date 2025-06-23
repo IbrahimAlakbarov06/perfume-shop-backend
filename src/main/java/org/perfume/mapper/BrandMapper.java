@@ -3,6 +3,7 @@ package org.perfume.mapper;
 import org.perfume.domain.entity.Brand;
 import org.perfume.model.dto.request.BrandRequest;
 import org.perfume.model.dto.response.BrandResponse;
+import org.perfume.model.dto.response.BrandSimpleResponse;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,7 +19,7 @@ public class BrandMapper implements EntityMapper<Brand, BrandResponse> {
                 entity.getId(),
                 entity.getName(),
                 entity.getDescription(),
-                entity.getLogoUrl(),
+                entity.getLogoUrl()
         );
     }
 
@@ -46,5 +47,16 @@ public class BrandMapper implements EntityMapper<Brand, BrandResponse> {
         brand.setDescription(request.getDescription());
         brand.setLogoUrl(request.getLogoUrl());
         return brand;
+    }
+
+    public BrandSimpleResponse toSimpleDto(Brand entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        return new BrandSimpleResponse(
+                entity.getId(),
+                entity.getName()
+        );
     }
 }
