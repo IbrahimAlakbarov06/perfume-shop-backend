@@ -38,8 +38,8 @@ public class CategoryController {
 
     @GetMapping("/search")
     @Operation(summary = "Search categories by name")
-    public ResponseEntity<List<CategoryResponse>> searchCategories(@RequestParam String q) {
-        List<CategoryResponse> categories = categoryService.searchCategories(q);
+    public ResponseEntity<List<CategoryResponse>> searchCategories(@RequestParam String name) {
+        List<CategoryResponse> categories = categoryService.searchCategories(name);
         return ResponseEntity.ok(categories);
     }
 

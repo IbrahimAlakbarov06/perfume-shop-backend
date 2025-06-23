@@ -3,11 +3,14 @@ package org.perfume.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.perfume.domain.entity.Category;
 import org.perfume.domain.repo.CategoryDao;
+import org.perfume.domain.repo.PerfumeDao;
 import org.perfume.exception.AlreadyExistsException;
 import org.perfume.exception.NotFoundException;
 import org.perfume.mapper.CategoryMapper;
+import org.perfume.mapper.PerfumeMapper;
 import org.perfume.model.dto.request.CategoryRequest;
 import org.perfume.model.dto.response.CategoryResponse;
+import org.perfume.model.dto.response.PerfumeResponse;
 import org.perfume.service.CategoryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryDao categoryDao;
     private final CategoryMapper categoryMapper;
+    private final PerfumeDao perfumeDao;
+    private final PerfumeMapper perfumeMapper;
 
     @Override
     public CategoryResponse save(CategoryRequest request) {
@@ -76,9 +81,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public List<CategoryResponse> getCategoriesWithPerfumes() {
         return categoryDao.findCategoriesWithPerfumes().stream()
-                .map(categoryMapper::toDto)
+                .map(category -> {
+                    List<PerfumeResponse> perfumes = perfumeDao.findByCategoryId(category.getId())
+                            .stream()
+                            .map(perfumeMapper::toDto)
+                            .collect(Collectors.toList());
+                    return categoryMapper.toDtoWithPerfumes(category, perfumes);
+                })
                 .collect(Collectors.toList());
     }
+
 
     @Override
     @Transactional(readOnly = true)

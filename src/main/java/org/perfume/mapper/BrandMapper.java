@@ -4,7 +4,10 @@ package org.perfume.mapper;
 import org.perfume.domain.entity.Brand;
 import org.perfume.model.dto.request.BrandRequest;
 import org.perfume.model.dto.response.BrandResponse;
+import org.perfume.model.dto.response.PerfumeResponse;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class BrandMapper implements EntityMapper<Brand, BrandResponse> {
@@ -20,6 +23,20 @@ public class BrandMapper implements EntityMapper<Brand, BrandResponse> {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getLogoUrl()
+        );
+    }
+
+    public BrandResponse toDtoWithPerfumes(Brand entity, List<PerfumeResponse> perfumes) {
+        if (entity == null) {
+            return null;
+        }
+
+        return new BrandResponse(
+                entity.getId(),
+                entity.getName(),
+                entity.getDescription(),
+                entity.getLogoUrl(),
+                perfumes
         );
     }
 

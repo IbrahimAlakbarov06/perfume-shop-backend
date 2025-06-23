@@ -3,11 +3,14 @@ package org.perfume.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.perfume.domain.entity.Brand;
 import org.perfume.domain.repo.BrandDao;
+import org.perfume.domain.repo.PerfumeDao;
 import org.perfume.exception.AlreadyExistsException;
 import org.perfume.exception.NotFoundException;
 import org.perfume.mapper.BrandMapper;
+import org.perfume.mapper.PerfumeMapper;
 import org.perfume.model.dto.request.BrandRequest;
 import org.perfume.model.dto.response.BrandResponse;
+import org.perfume.model.dto.response.PerfumeResponse;
 import org.perfume.service.BrandService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,8 @@ public class BrandServiceImpl implements BrandService {
 
     private final BrandDao brandDao;
     private final BrandMapper brandMapper;
+    private final PerfumeDao perfumeDao;
+    private final PerfumeMapper perfumeMapper;
 
     @Override
     public BrandResponse save(BrandRequest request) {
@@ -84,7 +89,13 @@ public class BrandServiceImpl implements BrandService {
     @Transactional(readOnly = true)
     public List<BrandResponse> getBrandsWithPerfumes() {
         return brandDao.findBrandsWithPerfumes().stream()
-                .map(brandMapper::toDto)
+                .map(brand -> {
+                    List<PerfumeResponse> perfumes = perfumeDao.findByBrandId(brand.getId())
+                            .stream()
+                            .map(perfumeMapper::toDto)
+                            .collect(Collectors.toList());
+                    return brandMapper.toDtoWithPerfumes(brand, perfumes);
+                })
                 .collect(Collectors.toList());
     }
 }
