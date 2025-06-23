@@ -12,13 +12,4 @@ public class BrandResponse {
     private String name;
     private String description;
     private String logoUrl;
-    private Integer perfumeCount;
-
-    public BrandResponse(Long id, String name, String description, String logoUrl) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.logoUrl = logoUrl;
-        this.perfumeCount = 0;
-    }
 }

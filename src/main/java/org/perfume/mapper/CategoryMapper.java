@@ -18,7 +18,6 @@ public class CategoryMapper implements EntityMapper<Category, CategoryResponse> 
                 entity.getId(),
                 entity.getName(),
                 entity.getDescription(),
-                entity.getPerfumes() != null ? entity.getPerfumes().size() : 0
         );
     }
 

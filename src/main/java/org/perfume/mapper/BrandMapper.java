@@ -19,7 +19,6 @@ public class BrandMapper implements EntityMapper<Brand, BrandResponse> {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getLogoUrl(),
-                entity.getPerfumes() != null ? entity.getPerfumes().size() : 0
         );
     }
 
