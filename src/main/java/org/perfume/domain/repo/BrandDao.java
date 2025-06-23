@@ -11,15 +11,10 @@ import java.util.Optional;
 
 @Repository
 public interface BrandDao extends JpaRepository<Brand, Long> {
-    Optional<Brand> findByName(String name);
-
     @Query("select distinct b from Brand b where lower(b.name) like lower(concat('%', :name, '%'))")
     List<Brand> findByNameContaining(@Param("name") String name);
 
     List<Brand> findAllByOrderByNameAsc();
-
-    @Query("select b from Brand b where size(b.perfumes)> 0 order by b.name")
-    List<Brand> findBrandsWithPerfumes();
 
     boolean existsByName(String name);
 }

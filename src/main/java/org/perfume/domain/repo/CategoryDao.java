@@ -11,16 +11,10 @@ import java.util.Optional;
 
 @Repository
 public interface CategoryDao extends JpaRepository<Category, Long> {
-
-    Optional<Category> findByName(String name);
-
     List<Category> findAllByOrderByNameAsc();
 
     @Query("select distinct c from Category c where lower(c.name) like lower(concat('%', :name, '%'))")
     List<Category> findByNameContainingIgnoreCase(@Param("name") String name);
 
     boolean existsByName(String name);
-
-    @Query("select c from Category c where size(c.perfumes)> 0 order by c.name")
-    List<Category> findCategoriesWithPerfumes();
 }
