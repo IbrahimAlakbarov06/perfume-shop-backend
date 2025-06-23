@@ -30,4 +30,8 @@ public class PerfumeResponse {
     private FragranceFamily fragranceFamily;
     private Gender gender;
     private boolean isFavorite;
+    private Double averageRating;
+    private Long ratingCount;
+    private boolean canRating;
+    private RatingResponse rating;
 }

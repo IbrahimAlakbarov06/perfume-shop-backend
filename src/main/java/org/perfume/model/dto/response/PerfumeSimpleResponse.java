@@ -25,4 +25,6 @@ public class PerfumeSimpleResponse {
     private FragranceFamily fragranceFamily;
     private Gender gender;
     private boolean isFavorite;
+    private Double averageRating;
+    private Long ratingCount;
 }
