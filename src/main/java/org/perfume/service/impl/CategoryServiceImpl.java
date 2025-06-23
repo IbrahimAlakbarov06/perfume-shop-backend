@@ -81,14 +81,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeSimpleResponse> getPerfumesByCategory(Long id) {
-        return categoryDao.findCategoriesWithPerfumes().stream()
-                .map(category -> {
-                    List<PerfumeResponse> perfumes = perfumeDao.findByCategoryId(category.getId())
-                            .stream()
-                            .map(perfumeMapper::toDto)
-                            .collect(Collectors.toList());
-                    return categoryMapper.toDtoWithPerfumes(category, perfumes);
-                })
+        if (!categoryDao.existsById(id)) {
+            throw new NotFoundException("Category with id " + id + " not found");
+        }
+
+        return perfumeDao.findByCategoryId(id).stream()
+                .map(perfumeMapper::toSimpleDto)
                 .collect(Collectors.toList());
     }
 

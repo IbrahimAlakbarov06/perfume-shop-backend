@@ -89,14 +89,12 @@ public class BrandServiceImpl implements BrandService {
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeSimpleResponse> getPerfumesByBrand(Long id) {
-        return brandDao.findBrandsWithPerfumes().stream()
-                .map(brand -> {
-                    List<PerfumeResponse> perfumes = perfumeDao.findByBrandId(brand.getId())
-                            .stream()
-                            .map(perfumeMapper::toDto)
-                            .collect(Collectors.toList());
-                    return brandMapper.toDtoWithPerfumes(brand, perfumes);
-                })
+        if (!brandDao.existsById(id)) {
+            throw new NotFoundException("Brand not found");
+        }
+
+        return perfumeDao.findByBrandId(id).stream()
+                .map(perfumeMapper::toSimpleDto)
                 .collect(Collectors.toList());
     }
 }
