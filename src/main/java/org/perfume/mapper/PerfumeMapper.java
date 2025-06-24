@@ -2,13 +2,17 @@ package org.perfume.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.perfume.domain.entity.Perfume;
+import org.perfume.domain.entity.Rating;
 import org.perfume.domain.repo.BrandDao;
 import org.perfume.domain.repo.CategoryDao;
+import org.perfume.domain.repo.RatingDao;
 import org.perfume.exception.NotFoundException;
 import org.perfume.model.dto.request.PerfumeRequest;
 import org.perfume.model.dto.response.PerfumeResponse;
 import org.perfume.model.dto.response.PerfumeSimpleResponse;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -16,11 +20,17 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
 
     private final BrandMapper brandMapper;
     private final CategoryMapper categoryMapper;
+    private final RatingMapper ratingMapper;
     private final BrandDao brandDao;
     private final CategoryDao categoryDao;
+    private final RatingDao ratingDao;
 
     @Override
     public PerfumeResponse toDto(Perfume entity) {
+        return toDto(entity, null);
+    }
+
+    public PerfumeResponse toDto(Perfume entity, Long userId) {
         if (entity == null) {
             return null;
         }
@@ -45,8 +55,20 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
         response.setFavorite(false);
         response.setAverageRating(entity.getAverageRating());
         response.setRatingCount(entity.getRatingCount());
-        response.setCanRating(true);
-        response.setRating(null);
+
+        if (userId != null) {
+            Optional<Rating> userRating = ratingDao.findByUserIdAndPerfumeId(userId, entity.getId());
+            if (userRating.isPresent()) {
+                response.setRating(ratingMapper.toDto(userRating.get()));
+                response.setCanRating(false);
+            } else {
+                response.setRating(null);
+                response.setCanRating(true);
+            }
+        } else {
+            response.setRating(null);
+            response.setCanRating(true);
+        }
 
         return response;
     }
