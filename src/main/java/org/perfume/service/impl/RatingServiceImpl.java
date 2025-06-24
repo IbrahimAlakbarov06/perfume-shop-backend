@@ -1,9 +1,9 @@
 package org.perfume.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.perfume.domain.entity.*;
 import org.perfume.domain.repo.*;
+import org.perfume.exception.AlreadyExistsException;
 import org.perfume.exception.InvalidInputException;
 import org.perfume.exception.NotFoundException;
 import org.perfume.mapper.RatingMapper;
@@ -36,12 +36,12 @@ public class RatingServiceImpl implements RatingService {
         Perfume perfume = perfumeDao.findById(perfumeId)
                 .orElseThrow(() -> new NotFoundException("Perfume not found with id: " + perfumeId));
 
-        if (canUserRate(userId, perfumeId)) {
+        if (!canUserRate(userId, perfumeId)) {
             throw new InvalidInputException("You can only rate products you have purchased and received");
         }
 
         if (ratingDao.existsByUserIdAndPerfumeId(userId, perfumeId)) {
-            throw new InvalidInputException("You have already rated this product");
+            throw new AlreadyExistsException("You have already rated this product");
         }
 
         Rating rating = ratingMapper.toEntity(request);
@@ -111,13 +111,16 @@ public class RatingServiceImpl implements RatingService {
         return orderDao.existsByUserIdAndPerfumeIdAndStatus(userId, perfumeId, OrderStatus.DELIVERED);
     }
 
-    @Override
     public void updatePerfumeRatingStats(Long perfumeId) {
         Double averageRating = ratingDao.getAverageRatingByPerfumeId(perfumeId);
         Long ratingCount = ratingDao.getRatingCountByPerfumeId(perfumeId);
 
         Perfume perfume = perfumeDao.findById(perfumeId)
                 .orElseThrow(() -> new NotFoundException("Perfume not found with id: " + perfumeId));
+
+        if (averageRating != null) {
+            averageRating = Math.round(averageRating * 10.0) / 10.0;
+        }
 
         perfume.updateRatingStats(averageRating, ratingCount);
         perfumeDao.save(perfume);

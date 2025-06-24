@@ -13,7 +13,7 @@ public class RatingResponse {
     private Long id;
     private String userName;
     private String perfumeName;
-    private Double rating;
+    private Integer rating;
     private String comment;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

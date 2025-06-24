@@ -30,7 +30,7 @@ public class Rating {
     private Perfume perfume;
 
     @Column(nullable = false)
-    private Double rating;
+    private Integer rating;
 
     @Column(columnDefinition = "TEXT")
     private String comment;
