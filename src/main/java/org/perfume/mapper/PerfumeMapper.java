@@ -25,25 +25,30 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
             return null;
         }
 
-        return new PerfumeResponse(
-                entity.getId(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.getPrice(),
-                entity.getDiscountedPrice(),
-                entity.getImageUrl(),
-                entity.getStockQuantity(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                brandMapper.toSimpleDto(entity.getBrand()),
-                categoryMapper.toSimpleDto(entity.getCategory()),
-                entity.isFeatured(),
-                entity.isBestseller(),
-                entity.getDiscountPercent(),
-                entity.getFragranceFamily(),
-                entity.getGender(),
-                false
-        );
+        PerfumeResponse response = new PerfumeResponse();
+        response.setId(entity.getId());
+        response.setName(entity.getName());
+        response.setDescription(entity.getDescription());
+        response.setPrice(entity.getPrice());
+        response.setDiscountedPrice(entity.getDiscountedPrice());
+        response.setImageUrl(entity.getImageUrl());
+        response.setStockQuantity(entity.getStockQuantity());
+        response.setCreatedAt(entity.getCreatedAt());
+        response.setUpdatedAt(entity.getUpdatedAt());
+        response.setBrand(brandMapper.toSimpleDto(entity.getBrand()));
+        response.setCategory(categoryMapper.toSimpleDto(entity.getCategory()));
+        response.setFeatured(entity.isFeatured());
+        response.setBestseller(entity.isBestseller());
+        response.setDiscountPercent(entity.getDiscountPercent());
+        response.setFragranceFamily(entity.getFragranceFamily());
+        response.setGender(entity.getGender());
+        response.setFavorite(false);
+        response.setAverageRating(entity.getAverageRating());
+        response.setRatingCount(entity.getRatingCount());
+        response.setCanRating(true);
+        response.setRating(null);
+
+        return response;
     }
 
     public PerfumeSimpleResponse toSimpleDto(Perfume entity) {
@@ -51,21 +56,24 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
             return null;
         }
 
-        return new PerfumeSimpleResponse(
-                entity.getId(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.getPrice(),
-                entity.getDiscountedPrice(),
-                entity.getImageUrl(),
-                entity.getStockQuantity(),
-                entity.isFeatured(),
-                entity.isBestseller(),
-                entity.getDiscountPercent(),
-                entity.getFragranceFamily(),
-                entity.getGender(),
-                false
-        );
+        PerfumeSimpleResponse response = new PerfumeSimpleResponse();
+        response.setId(entity.getId());
+        response.setName(entity.getName());
+        response.setDescription(entity.getDescription());
+        response.setPrice(entity.getPrice());
+        response.setDiscountedPrice(entity.getDiscountedPrice());
+        response.setImageUrl(entity.getImageUrl());
+        response.setStockQuantity(entity.getStockQuantity());
+        response.setFeatured(entity.isFeatured());
+        response.setBestseller(entity.isBestseller());
+        response.setDiscountPercent(entity.getDiscountPercent());
+        response.setFragranceFamily(entity.getFragranceFamily());
+        response.setGender(entity.getGender());
+        response.setFavorite(false);
+        response.setAverageRating(entity.getAverageRating());
+        response.setRatingCount(entity.getRatingCount());
+
+        return response;
     }
 
     @Override
@@ -86,6 +94,9 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
         perfume.setDiscountPercent(dto.getDiscountPercent());
         perfume.setFragranceFamily(dto.getFragranceFamily());
         perfume.setGender(dto.getGender());
+        perfume.setAverageRating(dto.getAverageRating());
+        perfume.setRatingCount(dto.getRatingCount());
+
         return perfume;
     }
 
