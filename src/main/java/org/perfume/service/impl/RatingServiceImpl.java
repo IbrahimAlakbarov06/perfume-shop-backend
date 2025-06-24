@@ -36,7 +36,7 @@ public class RatingServiceImpl implements RatingService {
         Perfume perfume = perfumeDao.findById(perfumeId)
                 .orElseThrow(() -> new NotFoundException("Perfume not found with id: " + perfumeId));
 
-        if (!canUserRate(userId, perfumeId)) {
+        if (canUserRate(userId, perfumeId)) {
             throw new InvalidInputException("You can only rate products you have purchased and received");
         }
 
@@ -50,7 +50,7 @@ public class RatingServiceImpl implements RatingService {
 
         Rating savedRating = ratingDao.save(rating);
 
-        updatePerfumeRatingStats(savedRating.getId());
+        updatePerfumeRatingStats(perfumeId);
 
         return ratingMapper.toDto(savedRating);
     }

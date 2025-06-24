@@ -19,6 +19,7 @@ public class RatingMapper {
         return new RatingResponse(
                 rating.getId(),
                 rating.getUser().getName(),
+                rating.getPerfume().getName(),
                 rating.getRating(),
                 rating.getComment(),
                 rating.getCreatedAt(),

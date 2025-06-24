@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 public class RatingResponse {
     private Long id;
     private String userName;
-    private Integer rating;
+    private String perfumeName;
+    private Double rating;
     private String comment;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
