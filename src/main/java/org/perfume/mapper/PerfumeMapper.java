@@ -6,10 +6,12 @@ import org.perfume.domain.entity.Rating;
 import org.perfume.domain.repo.BrandDao;
 import org.perfume.domain.repo.CategoryDao;
 import org.perfume.domain.repo.RatingDao;
+import org.perfume.domain.repo.OrderDao;
 import org.perfume.exception.NotFoundException;
 import org.perfume.model.dto.request.PerfumeRequest;
 import org.perfume.model.dto.response.PerfumeResponse;
 import org.perfume.model.dto.response.PerfumeSimpleResponse;
+import org.perfume.model.enums.OrderStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -24,6 +26,7 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
     private final BrandDao brandDao;
     private final CategoryDao categoryDao;
     private final RatingDao ratingDao;
+    private final OrderDao orderDao;
 
     @Override
     public PerfumeResponse toDto(Perfume entity) {
@@ -58,16 +61,20 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
 
         if (userId != null) {
             Optional<Rating> userRating = ratingDao.findByUserIdAndPerfumeId(userId, entity.getId());
+
             if (userRating.isPresent()) {
                 response.setRating(ratingMapper.toDto(userRating.get()));
                 response.setCanRating(false);
             } else {
+                boolean canRate = orderDao.existsByUserIdAndPerfumeIdAndStatus(
+                        userId, entity.getId(), OrderStatus.DELIVERED);
+
                 response.setRating(null);
-                response.setCanRating(true);
+                response.setCanRating(canRate);
             }
         } else {
             response.setRating(null);
-            response.setCanRating(true);
+            response.setCanRating(false);
         }
 
         return response;
