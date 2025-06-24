@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/swagger-resources/**", "/webjars/**").permitAll() // Add this line
+                        .requestMatchers("/swagger-resources/**", "/webjars/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/perfumes/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/brands/**").permitAll()
@@ -65,6 +65,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/cart/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/favorites/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/orders/**").hasAnyRole("USER", "ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/api/ratings/perfume/*/").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/ratings/perfume/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/ratings/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/ratings/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/ratings/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/ratings/**").hasAnyRole("USER", "ADMIN")
 
                         .anyRequest().authenticated()
                 );
@@ -92,6 +99,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
-
 }
