@@ -2,10 +2,7 @@ package org.perfume.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.perfume.model.enums.UserRole;
 
 import java.time.LocalDateTime;
@@ -14,10 +11,12 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = {"cart", "favorites", "orders"})
 public class User {
 
     @Id

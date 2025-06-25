@@ -2,9 +2,7 @@ package org.perfume.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.perfume.model.enums.FragranceFamily;
 import org.perfume.model.enums.Gender;
 import org.perfume.model.enums.Volume;
@@ -16,9 +14,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "products")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"brand", "category", "cartItems", "favoritedBy", "ratings"})
 public class Perfume {
 
     @Id
