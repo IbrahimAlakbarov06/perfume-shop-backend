@@ -90,15 +90,15 @@ public class CartController {
         return ResponseEntity.ok(cartItems);
     }
 
-    @GetMapping("/admin/most-added-products")
+    @GetMapping("/most-added-products")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get most added products to cart (Admin only)")
-    public ResponseEntity<List<Object[]>> getMostAddedProducts() {
-        List<Object[]> mostAddedProducts = cartService.getMostAddedProducts();
+    public ResponseEntity<List<MostAddedProductResponse>> getMostAddedProducts() {
+        List<MostAddedProductResponse> mostAddedProducts = cartService.getMostAddedProducts();
         return ResponseEntity.ok(mostAddedProducts);
     }
 
-    @GetMapping("/admin/perfume/{perfumeId}/cart-items")
+    @GetMapping("/perfume/{perfumeId}/cart-items")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get cart items by perfume ID (Admin only)")
     public ResponseEntity<List<CartItemSimpleResponse>> getCartItemsByPerfumeId(@PathVariable Long perfumeId) {

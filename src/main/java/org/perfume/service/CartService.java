@@ -4,6 +4,7 @@ import org.perfume.model.dto.request.CartItemRequest;
 import org.perfume.model.dto.response.CartItemResponse;
 import org.perfume.model.dto.response.CartItemSimpleResponse;
 import org.perfume.model.dto.response.CartResponse;
+import org.perfume.model.dto.response.MostAddedProductResponse;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface CartService {
 
     List<CartItemResponse> getUserCartItems(Long userId);
 
-    List<Object[]> getMostAddedProducts();
+    List<MostAddedProductResponse> getMostAddedProducts();
 
     List<CartItemSimpleResponse> getCartItemsByPerfumeId(Long perfumeId);
 }

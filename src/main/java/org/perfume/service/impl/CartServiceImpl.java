@@ -13,10 +13,9 @@ import org.perfume.exception.InvalidInputException;
 import org.perfume.exception.NotFoundException;
 import org.perfume.mapper.CartItemMapper;
 import org.perfume.mapper.CartMapper;
+import org.perfume.mapper.PerfumeMapper;
 import org.perfume.model.dto.request.CartItemRequest;
-import org.perfume.model.dto.response.CartItemResponse;
-import org.perfume.model.dto.response.CartItemSimpleResponse;
-import org.perfume.model.dto.response.CartResponse;
+import org.perfume.model.dto.response.*;
 import org.perfume.service.CartService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +35,7 @@ public class CartServiceImpl implements CartService {
     private final CartMapper cartMapper;
     private final PerfumeDao perfumeDao;
     private final CartItemMapper cartItemMapper;
+    private final PerfumeMapper perfumeMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -182,8 +182,27 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Object[]> getMostAddedProducts() {
-        return cartItemDao.findMostAddedProducts();
+    public List<MostAddedProductResponse> getMostAddedProducts() {
+        List<Object[]> cartItems = cartItemDao.findMostAddedProducts();
+
+        return cartItems.stream()
+                .map(item -> {
+                    Long perfumeId = (Long) item[0];
+                    Long count = (Long) item[1];
+
+                    Perfume perfume = perfumeDao.findById(perfumeId).orElse(null);
+
+                    if (perfume == null) {
+                        return null;
+                    }
+
+                    MostPerfumesResponse perfumeResponse = perfumeMapper.toNewDto(perfume);
+                    String popularity = getPopularityLevel(count);
+
+                    return new MostAddedProductResponse(perfumeResponse, count, popularity);
+                })
+                .filter(response -> response != null)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -193,6 +212,19 @@ public class CartServiceImpl implements CartService {
         return cartItems.stream()
                 .map(cartItemMapper::toSimpleDto)
                 .collect(Collectors.toList());
+    }
+
+    private String getPopularityLevel(Long count) {
+        if (count >= 50) {
+            return "Very Popular";
+        } else if (count >= 20) {
+            return "Popular";
+        } else if (count >= 10) {
+            return "Moderate";
+        } else {
+            return "New";
+        }
+
     }
 
     private Cart createCartForUser(Long userId) {
