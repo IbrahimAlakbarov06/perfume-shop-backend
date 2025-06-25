@@ -15,6 +15,7 @@ import org.perfume.mapper.CartItemMapper;
 import org.perfume.mapper.CartMapper;
 import org.perfume.model.dto.request.CartItemRequest;
 import org.perfume.model.dto.response.CartItemResponse;
+import org.perfume.model.dto.response.CartItemSimpleResponse;
 import org.perfume.model.dto.response.CartResponse;
 import org.perfume.service.CartService;
 import org.springframework.stereotype.Service;
@@ -120,30 +121,49 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse removeFromCart(Long userId, Long perfumeId) {
-
-        Cart cart = getUserCartEntity(userId);
-
-        if (!cartItemDao.existsByCartIdAndPerfumeId(cart.getId(), perfumeId)) {
-            throw new NotFoundException("Product not found in cart");
+        if (!userDao.existsById(userId)) {
+            throw new NotFoundException("User not found with id " + userId);
         }
 
-        cartItemDao.deleteByCartIdAndPerfumeId(cart.getId(), perfumeId);
+        Cart cart = cartDao.findByUserId(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id " + userId));
+
+        CartItem cartItem = cartItemDao.findByCartIdAndPerfumeId(cart.getId(), perfumeId)
+                .orElseThrow(() -> new NotFoundException("Perfume not found in cart"));
+
+        cartItemDao.delete(cartItem);
 
         return getUserCart(userId);
     }
 
     @Override
     public void clearCart(Long userId) {
-        Cart cart = getUserCartEntity(userId);
+        if (!userDao.existsById(userId)) {
+            throw new NotFoundException("User not found with id " + userId);
+        }
 
-        cartItemDao.deleteByCartId(cart.getId());
+        Cart cart = cartDao.findByUserId(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id " + userId));
+
+        List<CartItem> cartItems = cartItemDao.findByCartId(cart.getId());
+        if (!cartItems.isEmpty()) {
+            cartItemDao.deleteAll(cartItems);
+        }
     }
 
     @Override
     @Transactional(readOnly = true)
     public Integer getTotalQuantity(Long userId) {
-        Cart cart = getUserCartEntity(userId);
-        Integer total = cartItemDao.getTotalQuantityByCartId(cart.getId());
+        if (!userDao.existsById(userId)) {
+            return 0;
+        }
+
+        Optional<Cart> cartOpt = cartDao.findByUserId(userId);
+        if (cartOpt.isEmpty()) {
+            return 0;
+        }
+
+        Integer total = cartItemDao.getTotalQuantityByCartId(cartOpt.get().getId());
         return total != null ? total : 0;
     }
 
@@ -168,10 +188,10 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CartItemResponse> getCartItemsByPerfumeId(Long perfumeId) {
+    public List<CartItemSimpleResponse> getCartItemsByPerfumeId(Long perfumeId) {
         List<CartItem> cartItems = cartItemDao.findByPerfumeId(perfumeId);
         return cartItems.stream()
-                .map(cartItemMapper::toDto)
+                .map(cartItemMapper::toSimpleDto)
                 .collect(Collectors.toList());
     }
 
@@ -204,12 +224,11 @@ public class CartServiceImpl implements CartService {
     }
 
     private Cart getUserCartEntity(Long userId) {
-        List<Cart> carts = cartDao.findByUserIdWithItems(userId);
-
-        if (carts.isEmpty()) {
+        if (!userDao.existsById(userId)) {
             throw new NotFoundException("User not found with id " + userId);
         }
 
-        return carts.get(0);
+        return cartDao.findByUserId(userId)
+                .orElseThrow(() -> new NotFoundException("Cart not found for user id " + userId));
     }
 }
