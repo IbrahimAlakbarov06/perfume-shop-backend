@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.perfume.model.dto.request.CartItemRequest;
-import org.perfume.model.dto.response.CartItemResponse;
-import org.perfume.model.dto.response.CartResponse;
-import org.perfume.model.dto.response.MessageResponse;
-import org.perfume.model.dto.response.UserResponse;
+import org.perfume.model.dto.response.*;
 import org.perfume.service.CartService;
 import org.perfume.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -104,8 +101,8 @@ public class CartController {
     @GetMapping("/admin/perfume/{perfumeId}/cart-items")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get cart items by perfume ID (Admin only)")
-    public ResponseEntity<List<CartItemResponse>> getCartItemsByPerfumeId(@PathVariable Long perfumeId) {
-        List<CartItemResponse> cartItems = cartService.getCartItemsByPerfumeId(perfumeId);
+    public ResponseEntity<List<CartItemSimpleResponse>> getCartItemsByPerfumeId(@PathVariable Long perfumeId) {
+        List<CartItemSimpleResponse> cartItems = cartService.getCartItemsByPerfumeId(perfumeId);
         return ResponseEntity.ok(cartItems);
     }
 }

@@ -3,6 +3,7 @@ package org.perfume.mapper;
 import lombok.RequiredArgsConstructor;
 import org.perfume.domain.entity.CartItem;
 import org.perfume.model.dto.response.CartItemResponse;
+import org.perfume.model.dto.response.CartItemSimpleResponse;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -24,6 +25,24 @@ public class CartItemMapper implements EntityMapper<CartItem, CartItemResponse> 
 
         return new CartItemResponse(
                 entity.getId(),
+                perfumeMapper.toDto(entity.getPerfume()),
+                entity.getQuantity(),
+                subtotal
+        );
+    }
+
+
+    public CartItemSimpleResponse toSimpleDto(CartItem entity) {
+        if(entity == null){
+            return null;
+        }
+
+        BigDecimal subtotal = entity.getPerfume().getDiscountedPrice()
+                .multiply(BigDecimal.valueOf(entity.getQuantity()));
+
+        return new CartItemSimpleResponse(
+                entity.getId(),
+                entity.getCart().getUser().getName(),
                 perfumeMapper.toDto(entity.getPerfume()),
                 entity.getQuantity(),
                 subtotal
