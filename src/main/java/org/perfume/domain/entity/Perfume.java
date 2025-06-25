@@ -1,5 +1,6 @@
 package org.perfume.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -81,12 +82,15 @@ public class Perfume {
     private Long ratingCount = 0L;
 
     @OneToMany(mappedBy = "perfume", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<CartItem> cartItems = new HashSet<>();
 
     @OneToMany(mappedBy = "perfume", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Favorite> favoritedBy = new HashSet<>();
 
     @OneToMany(mappedBy = "perfume", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Rating> ratings = new HashSet<>();
 
     @PrePersist

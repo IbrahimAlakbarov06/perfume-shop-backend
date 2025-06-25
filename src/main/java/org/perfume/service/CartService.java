@@ -1,6 +1,5 @@
 package org.perfume.service;
 
-import org.perfume.domain.entity.CartItem;
 import org.perfume.model.dto.request.CartItemRequest;
 import org.perfume.model.dto.response.CartItemResponse;
 import org.perfume.model.dto.response.CartResponse;
