@@ -150,7 +150,11 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional(readOnly = true)
     public List<CartItemResponse> getUserCartItems(Long userId) {
-        List<CartItem> cartItems= cartItemDao.findByPerfumeId(userId);
+        if (!userDao.existsById(userId)) {
+            throw new NotFoundException("User not found with id " + userId);
+        }
+
+        List<CartItem> cartItems = cartItemDao.findByUserId(userId);
         return cartItems.stream()
                 .map(cartItemMapper::toDto)
                 .collect(Collectors.toList());

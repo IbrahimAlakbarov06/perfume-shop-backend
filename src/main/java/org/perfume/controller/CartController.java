@@ -74,7 +74,7 @@ public class CartController {
         return ResponseEntity.ok(count);
     }
 
-    @DeleteMapping("remove/{perfumeId}")
+    @DeleteMapping("/remove/{perfumeId}")
     @Operation(summary = "Remove item from cart")
     public ResponseEntity<CartResponse> removeFromCart(
             Authentication authentication,
