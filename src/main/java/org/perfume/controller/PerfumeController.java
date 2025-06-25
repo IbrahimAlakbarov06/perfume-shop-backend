@@ -10,6 +10,7 @@ import org.perfume.model.dto.response.PageResponse;
 import org.perfume.model.dto.response.PerfumeResponse;
 import org.perfume.model.enums.FragranceFamily;
 import org.perfume.model.enums.Gender;
+import org.perfume.model.enums.Volume;
 import org.perfume.service.PerfumeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,14 +56,14 @@ public class PerfumeController {
         return ResponseEntity.ok(perfumes);
     }
 
-    @GetMapping("/brand/{brand}")
+    @GetMapping("/brand/{brandId}")
     @Operation(summary = "Get perfumes by brand")
     public ResponseEntity<List<PerfumeResponse>> getPerfumesByBrand(@PathVariable Long brandId) {
         List<PerfumeResponse> perfumes = perfumeService.getPerfumesByBrand(brandId);
         return ResponseEntity.ok(perfumes);
     }
 
-    @GetMapping("/category/{category}")
+    @GetMapping("/category/{categoryId}")
     @Operation(summary = "Get perfumes by category")
     public ResponseEntity<List<PerfumeResponse>> getPerfumesByCategory(@PathVariable Long categoryId) {
         List<PerfumeResponse> perfumes = perfumeService.getPerfumesByCategory(categoryId);
@@ -89,6 +90,13 @@ public class PerfumeController {
     @Operation(summary = "Get perfumes by gender")
     public ResponseEntity<List<PerfumeResponse>> getPerfumesByGender(@PathVariable Gender gender) {
         List<PerfumeResponse> perfumes = perfumeService.getPerfumesByGender(gender);
+        return ResponseEntity.ok(perfumes);
+    }
+
+    @GetMapping("/volume/{volume}")
+    @Operation(summary = "Get perfumes by volume")
+    public ResponseEntity<List<PerfumeResponse>> getPerfumesByVolume(@PathVariable Volume volume) {
+        List<PerfumeResponse> perfumes = perfumeService.getPerfumesByVolume(volume);
         return ResponseEntity.ok(perfumes);
     }
 

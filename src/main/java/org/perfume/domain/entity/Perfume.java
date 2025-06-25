@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.perfume.model.enums.FragranceFamily;
 import org.perfume.model.enums.Gender;
+import org.perfume.model.enums.Volume;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -68,6 +69,10 @@ public class Perfume {
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
     private Gender gender;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "volume", nullable = false)
+    private Volume volume;
 
     @Column(name = "average_rating")
     private Double averageRating = 0.0;

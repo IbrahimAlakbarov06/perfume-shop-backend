@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.perfume.model.enums.FragranceFamily;
 import org.perfume.model.enums.Gender;
+import org.perfume.model.enums.Volume;
 
 import java.math.BigDecimal;
 
@@ -48,4 +49,7 @@ public class PerfumeRequest {
 
     @NotNull(message = "Gender is required")
     private Gender gender;
+
+    @NotNull(message = "Volume is required")
+    private Volume volume;
 }

@@ -55,6 +55,7 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
         response.setDiscountPercent(entity.getDiscountPercent());
         response.setFragranceFamily(entity.getFragranceFamily());
         response.setGender(entity.getGender());
+        response.setVolume(entity.getVolume());
         response.setFavorite(false);
         response.setAverageRating(entity.getAverageRating());
         response.setRatingCount(entity.getRatingCount());
@@ -98,6 +99,7 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
         response.setDiscountPercent(entity.getDiscountPercent());
         response.setFragranceFamily(entity.getFragranceFamily());
         response.setGender(entity.getGender());
+        response.setVolume(entity.getVolume());
         response.setFavorite(false);
         response.setAverageRating(entity.getAverageRating());
         response.setRatingCount(entity.getRatingCount());
@@ -123,6 +125,7 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
         perfume.setDiscountPercent(dto.getDiscountPercent());
         perfume.setFragranceFamily(dto.getFragranceFamily());
         perfume.setGender(dto.getGender());
+        perfume.setVolume(dto.getVolume());
         perfume.setAverageRating(dto.getAverageRating());
         perfume.setRatingCount(dto.getRatingCount());
 
@@ -145,6 +148,7 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
         perfume.setDiscountPercent(request.getDiscountPercent());
         perfume.setFragranceFamily(request.getFragranceFamily());
         perfume.setGender(request.getGender());
+        perfume.setVolume(request.getVolume());
 
         perfume.setBrand(brandDao.findById(request.getBrandId())
                 .orElseThrow(() -> new NotFoundException("Brand not found")));

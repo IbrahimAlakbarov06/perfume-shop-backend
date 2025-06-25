@@ -17,6 +17,7 @@ import org.perfume.model.dto.response.PageResponse;
 import org.perfume.model.dto.response.PerfumeResponse;
 import org.perfume.model.enums.FragranceFamily;
 import org.perfume.model.enums.Gender;
+import org.perfume.model.enums.Volume;
 import org.perfume.service.PerfumeService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -68,6 +69,7 @@ public class PerfumeServiceImpl implements PerfumeService {
         perfume.setBestseller(request.isBestseller());
         perfume.setFragranceFamily(request.getFragranceFamily());
         perfume.setGender(request.getGender());
+        perfume.setVolume(request.getVolume());
 
         if (!perfume.getBrand().getId().equals(request.getBrandId())) {
             Brand brand = brandDao.findById(request.getBrandId())
@@ -177,6 +179,14 @@ public class PerfumeServiceImpl implements PerfumeService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<PerfumeResponse> getPerfumesByVolume(Volume volume) {
+        return perfumeDao.findByVolume(volume).stream()
+                .map(perfumeMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<PerfumeResponse> getFeaturedPerfumes() {
         return perfumeDao.findByIsFeaturedTrue().stream()
                 .map(perfumeMapper::toDto)
@@ -277,6 +287,7 @@ public class PerfumeServiceImpl implements PerfumeService {
                         filterRequest.getMaxPrice(),
                         filterRequest.getGender(),
                         filterRequest.getFragranceFamily(),
+                        filterRequest.getVolume(),
                         filterRequest.getFeatured(),
                         filterRequest.getBestseller(),
                         pageable

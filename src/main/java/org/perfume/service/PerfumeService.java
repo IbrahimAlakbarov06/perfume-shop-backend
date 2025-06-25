@@ -6,6 +6,7 @@ import org.perfume.model.dto.response.PageResponse;
 import org.perfume.model.dto.response.PerfumeResponse;
 import org.perfume.model.enums.FragranceFamily;
 import org.perfume.model.enums.Gender;
+import org.perfume.model.enums.Volume;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -32,6 +33,8 @@ public interface PerfumeService {
     List<PerfumeResponse> getPerfumesByFragranceFamily(FragranceFamily family);
 
     List<PerfumeResponse> getPerfumesByGender(Gender gender);
+
+    List<PerfumeResponse> getPerfumesByVolume(Volume volume);
 
     List<PerfumeResponse> getFeaturedPerfumes();
 

@@ -3,6 +3,7 @@ package org.perfume.domain.repo;
 import org.perfume.domain.entity.Perfume;
 import org.perfume.model.enums.FragranceFamily;
 import org.perfume.model.enums.Gender;
+import org.perfume.model.enums.Volume;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,6 +31,8 @@ public interface PerfumeDao extends JpaRepository<Perfume, Long> {
     List<Perfume> findByFragranceFamily(FragranceFamily family);
 
     List<Perfume> findByGender(Gender gender);
+
+    List<Perfume> findByVolume(Volume volume);
 
     List<Perfume> findByIsFeaturedTrue();
 
@@ -60,6 +63,7 @@ public interface PerfumeDao extends JpaRepository<Perfume, Long> {
             "(:maxPrice is null or p.price <= :maxPrice) and" +
             "(:gender is null or p.gender = :gender) and" +
             "(:fragranceFamily is null or p.fragranceFamily = :fragranceFamily) and" +
+            "(:volume is null or p.volume = :volume) and" +
             "(:featured is null or p.isFeatured = :featured) and" +
             "(:bestSeller is null or p.isBestseller = :bestSeller)")
     List<Perfume> findWithFilters(
@@ -70,6 +74,7 @@ public interface PerfumeDao extends JpaRepository<Perfume, Long> {
             @Param("maxPrice") BigDecimal maxPrice,
             @Param("gender") Gender gender,
             @Param("fragranceFamily") FragranceFamily fragranceFamily,
+            @Param("volume") Volume volume,
             @Param("featured") Boolean featured,
             @Param("bestseller") Boolean bestseller,
             Pageable pageable
