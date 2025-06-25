@@ -11,8 +11,10 @@ import org.perfume.domain.repo.PerfumeDao;
 import org.perfume.domain.repo.UserDao;
 import org.perfume.exception.InvalidInputException;
 import org.perfume.exception.NotFoundException;
+import org.perfume.mapper.CartItemMapper;
 import org.perfume.mapper.CartMapper;
 import org.perfume.model.dto.request.CartItemRequest;
+import org.perfume.model.dto.response.CartItemResponse;
 import org.perfume.model.dto.response.CartResponse;
 import org.perfume.service.CartService;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +34,7 @@ public class CartServiceImpl implements CartService {
     private final UserDao userDao;
     private final CartMapper cartMapper;
     private final PerfumeDao perfumeDao;
+    private final CartItemMapper cartItemMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -58,8 +62,8 @@ public class CartServiceImpl implements CartService {
         User user = userDao.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id " + userId));
 
-        Perfume perfume = perfumeDao.findById(request.getProductId())
-                .orElseThrow(() -> new NotFoundException("Perfume not found with id " + request.getProductId()));
+        Perfume perfume = perfumeDao.findById(request.getPerfumeId())
+                .orElseThrow(() -> new NotFoundException("Perfume not found with id " + request.getPerfumeId()));
 
         if (perfume.getStockQuantity() < request.getQuantity() || perfume.getStockQuantity() == 0) {
             throw new InvalidInputException("Insufficient stock for product: " + perfume.getName());
@@ -67,7 +71,7 @@ public class CartServiceImpl implements CartService {
 
         Cart cart = getOrCreateCart(user);
 
-        Optional<CartItem> cartOpt = cartItemDao.findByCartIdAndPerfumeId(cart.getId(), request.getProductId());
+        Optional<CartItem> cartOpt = cartItemDao.findByCartIdAndPerfumeId(cart.getId(), request.getPerfumeId());
 
         if (cartOpt.isPresent()) {
             CartItem cartItem = cartOpt.get();
@@ -93,7 +97,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartResponse updateCartItem(Long userId, Long productId, Integer quantity) {
+    public CartResponse updateCartItem(Long userId, Long perfumeId, Integer quantity) {
 
         if (quantity == null || quantity < 1) {
             throw new InvalidInputException("Quantity must be at least 1");
@@ -101,7 +105,7 @@ public class CartServiceImpl implements CartService {
 
         Cart cart = getUserCartEntity(userId);
 
-        CartItem cartItem = cartItemDao.findByCartIdAndPerfumeId(cart.getId(), productId)
+        CartItem cartItem = cartItemDao.findByCartIdAndPerfumeId(cart.getId(), perfumeId)
                 .orElseThrow(() -> new NotFoundException("Product not found in cart"));
 
         if (quantity > cartItem.getPerfume().getStockQuantity()) {
@@ -115,15 +119,15 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartResponse removeFromCart(Long userId, Long productId) {
+    public CartResponse removeFromCart(Long userId, Long perfumeId) {
 
         Cart cart = getUserCartEntity(userId);
 
-        if (!cartItemDao.existsByCartIdAndPerfumeId(cart.getId(), productId)) {
+        if (!cartItemDao.existsByCartIdAndPerfumeId(cart.getId(), perfumeId)) {
             throw new NotFoundException("Product not found in cart");
         }
 
-        cartItemDao.deleteByCartIdAndPerfumeId(cart.getId(), productId);
+        cartItemDao.deleteByCartIdAndPerfumeId(cart.getId(), perfumeId);
 
         return getUserCart(userId);
     }
@@ -145,8 +149,11 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CartItem> getUserCartItems(Long userId) {
-        return cartItemDao.findByUserId(userId);
+    public List<CartItemResponse> getUserCartItems(Long userId) {
+        List<CartItem> cartItems= cartItemDao.findByPerfumeId(userId);
+        return cartItems.stream()
+                .map(cartItemMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -157,8 +164,11 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CartItem> getCartItemsByPerfumeId(Long perfumeId) {
-        return cartItemDao.findByPerfumeId(perfumeId);
+    public List<CartItemResponse> getCartItemsByPerfumeId(Long perfumeId) {
+        List<CartItem> cartItems = cartItemDao.findByPerfumeId(perfumeId);
+        return cartItems.stream()
+                .map(cartItemMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     private Cart createCartForUser(Long userId) {
@@ -171,7 +181,7 @@ public class CartServiceImpl implements CartService {
     }
 
     private void validateCartItemRequest(CartItemRequest request) {
-        if (request.getProductId() == null) {
+        if (request.getPerfumeId() == null) {
             throw new InvalidInputException("Product id is required");
         }
 
