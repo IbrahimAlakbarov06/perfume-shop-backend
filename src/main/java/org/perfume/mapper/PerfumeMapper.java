@@ -9,6 +9,7 @@ import org.perfume.domain.repo.RatingDao;
 import org.perfume.domain.repo.OrderDao;
 import org.perfume.exception.NotFoundException;
 import org.perfume.model.dto.request.PerfumeRequest;
+import org.perfume.model.dto.response.MostPerfumesResponse;
 import org.perfume.model.dto.response.PerfumeResponse;
 import org.perfume.model.dto.response.PerfumeSimpleResponse;
 import org.perfume.model.enums.OrderStatus;
@@ -157,4 +158,26 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
 
         return perfume;
     }
+
+    public MostPerfumesResponse toNewDto(Perfume entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        return new MostPerfumesResponse(
+                entity.getId(),
+                entity.getName(),
+                entity.getPrice(),
+                entity.getStockQuantity(),
+                brandMapper.toSimpleDto(entity.getBrand()),
+                categoryMapper.toSimpleDto(entity.getCategory()),
+                entity.getDiscountPercent(),
+                entity.getFragranceFamily(),
+                entity.getGender(),
+                entity.getVolume(),
+                entity.getAverageRating(),
+                entity.getRatingCount()
+        );
+    }
+
 }
