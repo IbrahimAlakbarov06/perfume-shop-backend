@@ -13,7 +13,7 @@ public class FavoriteResponse {
 
     private Long id;
 
-    private UserResponse user;
+    private String userName;
 
     private PerfumeResponse perfume;
 

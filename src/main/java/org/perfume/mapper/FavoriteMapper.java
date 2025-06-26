@@ -3,6 +3,7 @@ package org.perfume.mapper;
 import lombok.RequiredArgsConstructor;
 import org.perfume.domain.entity.Favorite;
 import org.perfume.model.dto.response.FavoriteResponse;
+import org.perfume.model.dto.response.PerfumeResponse;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,10 +19,13 @@ public class FavoriteMapper implements EntityMapper<Favorite, FavoriteResponse> 
             return null;
         }
 
+        PerfumeResponse perfumeResponse = perfumeMapper.toDto(entity.getPerfume(), entity.getId());
+        perfumeResponse.setFavorite(true);
+
         return new FavoriteResponse(
                 entity.getId(),
-                userMapper.toDto(entity.getUser()),
-                perfumeMapper.toDto(entity.getPerfume()),
+                entity.getUser().getName(),
+                perfumeResponse,
                 entity.getCreatedAt()
         );
     }
@@ -34,7 +38,6 @@ public class FavoriteMapper implements EntityMapper<Favorite, FavoriteResponse> 
 
         Favorite favorite = new Favorite();
         favorite.setId(dto.getId());
-        favorite.setUser(userMapper.toEntity(dto.getUser()));
         favorite.setPerfume(perfumeMapper.toEntity(dto.getPerfume()));
         favorite.setCreatedAt(dto.getCreatedAt());
         return favorite;

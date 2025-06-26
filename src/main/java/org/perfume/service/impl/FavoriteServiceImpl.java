@@ -10,7 +10,10 @@ import org.perfume.domain.repo.UserDao;
 import org.perfume.exception.AlreadyExistsException;
 import org.perfume.exception.NotFoundException;
 import org.perfume.mapper.FavoriteMapper;
+import org.perfume.mapper.PerfumeMapper;
 import org.perfume.model.dto.response.FavoriteResponse;
+import org.perfume.model.dto.response.MostAddedProductResponse;
+import org.perfume.model.dto.response.MostPerfumesResponse;
 import org.perfume.service.FavoriteService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     private final UserDao userDao;
     private final PerfumeDao perfumeDao;
     private final FavoriteMapper favoriteMapper;
+    private final PerfumeMapper perfumeMapper;
 
 
     @Override
@@ -98,8 +102,27 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Object[]> getMostFavoritedProducts() {
-        return favoriteDao.findMostFavoritedProducts();
+    public List<MostAddedProductResponse> getMostFavoritedProducts() {
+        List<Object[]> favorites = favoriteDao.findMostFavoritedProducts();
+        return favorites.stream()
+                .map(favorite -> {
+                    Long perfumeId = (Long) favorite[0];
+                    Long count = (Long) favorite[1];
+
+                    Perfume perfume = perfumeDao.findById(perfumeId).orElse(null);
+
+                    if (perfume == null) {
+                        return null;
+                    }
+
+                    MostPerfumesResponse response = perfumeMapper.toNewDto(perfume);
+                    String popularity = getPopularityLevel(count);
+
+                    return new MostAddedProductResponse(response, count, popularity);
+
+                })
+                .filter(respones -> respones != null)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -171,6 +194,18 @@ public class FavoriteServiceImpl implements FavoriteService {
         } else {
             addToFavorites(userId, perfumeId);
             return false;
+        }
+    }
+
+    private String getPopularityLevel(Long count) {
+        if (count >= 50) {
+            return "Very Popular";
+        } else if (count >= 20) {
+            return "Popular";
+        } else if (count >= 10) {
+            return "Moderate";
+        } else {
+            return "Not Popular";
         }
     }
 }

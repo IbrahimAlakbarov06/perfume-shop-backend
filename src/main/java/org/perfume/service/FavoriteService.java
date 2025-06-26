@@ -1,6 +1,7 @@
 package org.perfume.service;
 
 import org.perfume.model.dto.response.FavoriteResponse;
+import org.perfume.model.dto.response.MostAddedProductResponse;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface FavoriteService {
 
     List<FavoriteResponse> getProductFavorites(Long perfumeId);
 
-    List<Object[]> getMostFavoritedProducts();
+    List<MostAddedProductResponse> getMostFavoritedProducts();
 
     Long getUserFavoriteCount(Long userId);
 
