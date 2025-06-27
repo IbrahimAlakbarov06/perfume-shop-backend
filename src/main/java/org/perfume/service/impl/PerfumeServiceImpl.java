@@ -19,10 +19,13 @@ import org.perfume.model.enums.FragranceFamily;
 import org.perfume.model.enums.Gender;
 import org.perfume.model.enums.Volume;
 import org.perfume.service.PerfumeService;
+import org.perfume.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +42,7 @@ public class PerfumeServiceImpl implements PerfumeService {
     private final CategoryDao categoryDao;
     private final PerfumeMapper perfumeMapper;
     private final BrandDao brandDao;
+    private final UserService userService;
 
     @Override
     public PerfumeResponse save(PerfumeRequest request) {
@@ -100,22 +104,25 @@ public class PerfumeServiceImpl implements PerfumeService {
     public PerfumeResponse findById(Long id) {
         Perfume perfume = perfumeDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("Perfume not found with id: " + id));
-        return perfumeMapper.toDto(perfume);
+        Long userId = getCurrentUserId();
+        return perfumeMapper.toDto(perfume, userId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> findAll() {
+        Long userId = getCurrentUserId();
         return perfumeDao.findAll().stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> searchPerfumesByName(String name) {
+        Long userId = getCurrentUserId();
         return perfumeDao.findByNameContainingIgnoreCase(name).stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
@@ -126,8 +133,9 @@ public class PerfumeServiceImpl implements PerfumeService {
             throw new NotFoundException("Brand not found with id: " + brandId);
         }
 
+        Long userId = getCurrentUserId();
         return perfumeDao.findByBrandId(brandId).stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
@@ -137,8 +145,10 @@ public class PerfumeServiceImpl implements PerfumeService {
         if (!perfumeDao.existsById(categoryId)) {
             throw new NotFoundException("Category not found with id: " + categoryId);
         }
+
+        Long userId = getCurrentUserId();
         return perfumeDao.findByCategoryId(categoryId).stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
@@ -155,8 +165,10 @@ public class PerfumeServiceImpl implements PerfumeService {
             throw new InvalidInputException("Min price cannot be greater than max price.");
         }
 
+        Long userId = getCurrentUserId();
+
         return perfumeDao.findByPriceBetween(minPrice, maxPrice).stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
@@ -164,56 +176,63 @@ public class PerfumeServiceImpl implements PerfumeService {
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> getPerfumesByFragranceFamily(FragranceFamily family) {
+        Long userId = getCurrentUserId();
         return perfumeDao.findByFragranceFamily(family).stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> getPerfumesByGender(Gender gender) {
+        Long userId = getCurrentUserId();
         return perfumeDao.findByGender(gender).stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> getPerfumesByVolume(Volume volume) {
+        Long userId = getCurrentUserId();
         return perfumeDao.findByVolume(volume).stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> getFeaturedPerfumes() {
+        Long userId = getCurrentUserId();
         return perfumeDao.findByIsFeaturedTrue().stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> getBestsellerPerfumes() {
+        Long userId = getCurrentUserId();
         return perfumeDao.findByIsBestsellerTrue().stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> getInStockPerfumes() {
+        Long userId = getCurrentUserId();
         return perfumeDao.findInStockQuantity().stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> getDiscountedPerfumes() {
+        Long userId = getCurrentUserId();
         return perfumeDao.findDiscountedPerfumes().stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
@@ -242,15 +261,17 @@ public class PerfumeServiceImpl implements PerfumeService {
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> getPopularPerfumes() {
+        Long userId = getCurrentUserId();
         return perfumeDao.findPopularPerfumes()
                 .stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume -> perfumeMapper.toDto(perfume, userId))
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PerfumeResponse> getSimilarPerfumes(Long perfumeId) {
+        Long userId = getCurrentUserId();
         Perfume perfume = perfumeDao.findById(perfumeId)
                 .orElseThrow(() -> new NotFoundException("Perfume not found with id: " + perfumeId));
 
@@ -259,7 +280,7 @@ public class PerfumeServiceImpl implements PerfumeService {
                         perfume.getCategory().getId(),
                         perfumeId
                 ).stream()
-                .map(perfumeMapper::toDto)
+                .map(perfume1 -> perfumeMapper.toDto(perfume1, userId))
                 .collect(Collectors.toList());
     }
 
@@ -334,5 +355,20 @@ public class PerfumeServiceImpl implements PerfumeService {
         perfume.setBestseller(!perfume.isBestseller());
         Perfume updatedPerfume = perfumeDao.save(perfume);
         return perfumeMapper.toDto(updatedPerfume);
+    }
+
+    private Long getCurrentUserId() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (authentication == null || !authentication.isAuthenticated() ||
+                    authentication.getName().equals("anonymousUser")) {
+                return null;
+            }
+
+            return userService.getUserByEmail(authentication.getName()).getId();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
