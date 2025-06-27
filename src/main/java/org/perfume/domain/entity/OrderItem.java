@@ -34,12 +34,6 @@ public class OrderItem {
     @Column(name = "unit_price", nullable = false)
     private BigDecimal unitPrice;
 
-    @Column(name = "product_name", nullable = false)
-    private String productName;
-
-    @Column(name = "brand_name", nullable = false)
-    private String brandName;
-
     public BigDecimal getSubtotal() {
         return unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
