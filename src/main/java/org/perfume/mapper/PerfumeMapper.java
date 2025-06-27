@@ -7,6 +7,7 @@ import org.perfume.domain.repo.BrandDao;
 import org.perfume.domain.repo.CategoryDao;
 import org.perfume.domain.repo.RatingDao;
 import org.perfume.domain.repo.OrderDao;
+import org.perfume.domain.repo.FavoriteDao; // Add this import
 import org.perfume.exception.NotFoundException;
 import org.perfume.model.dto.request.PerfumeRequest;
 import org.perfume.model.dto.response.MostPerfumesResponse;
@@ -28,6 +29,7 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
     private final CategoryDao categoryDao;
     private final RatingDao ratingDao;
     private final OrderDao orderDao;
+    private final FavoriteDao favoriteDao; // Add this dependency
 
     @Override
     public PerfumeResponse toDto(Perfume entity) {
@@ -57,11 +59,15 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
         response.setFragranceFamily(entity.getFragranceFamily());
         response.setGender(entity.getGender());
         response.setVolume(entity.getVolume());
-        response.setFavorite(false);
+        response.setFavorite(false); // Default value
         response.setAverageRating(entity.getAverageRating());
         response.setRatingCount(entity.getRatingCount());
 
         if (userId != null) {
+            // Check if perfume is favorited by user
+            boolean isFavorite = favoriteDao.existsByUserIdAndPerfumeId(userId, entity.getId());
+            response.setFavorite(isFavorite);
+
             Optional<Rating> userRating = ratingDao.findByUserIdAndPerfumeId(userId, entity.getId());
 
             if (userRating.isPresent()) {
@@ -104,6 +110,40 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
         response.setFavorite(false);
         response.setAverageRating(entity.getAverageRating());
         response.setRatingCount(entity.getRatingCount());
+
+        return response;
+    }
+
+    // Add this new method for simple response with user context
+    public PerfumeSimpleResponse toSimpleDto(Perfume entity, Long userId) {
+        if (entity == null) {
+            return null;
+        }
+
+        PerfumeSimpleResponse response = new PerfumeSimpleResponse();
+        response.setId(entity.getId());
+        response.setName(entity.getName());
+        response.setDescription(entity.getDescription());
+        response.setPrice(entity.getPrice());
+        response.setDiscountedPrice(entity.getDiscountedPrice());
+        response.setImageUrl(entity.getImageUrl());
+        response.setStockQuantity(entity.getStockQuantity());
+        response.setFeatured(entity.isFeatured());
+        response.setBestseller(entity.isBestseller());
+        response.setDiscountPercent(entity.getDiscountPercent());
+        response.setFragranceFamily(entity.getFragranceFamily());
+        response.setGender(entity.getGender());
+        response.setVolume(entity.getVolume());
+        response.setAverageRating(entity.getAverageRating());
+        response.setRatingCount(entity.getRatingCount());
+
+        // Check favorite status if userId is provided
+        if (userId != null) {
+            boolean isFavorite = favoriteDao.existsByUserIdAndPerfumeId(userId, entity.getId());
+            response.setFavorite(isFavorite);
+        } else {
+            response.setFavorite(false);
+        }
 
         return response;
     }
@@ -179,5 +219,4 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
                 entity.getRatingCount()
         );
     }
-
 }

@@ -97,7 +97,7 @@ public class FavoriteController {
 
     @GetMapping("/perfume/{perfumeId}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get all favorities for a perume (Admin only)")
+    @Operation(summary = "Get all favorites for a perfume (Admin only)")
     public ResponseEntity<List<FavoriteResponse>> getProductFavorites(@PathVariable Long perfumeId) {
         List<FavoriteResponse> favorites = favoriteService.getProductFavorites(perfumeId);
         return ResponseEntity.ok(favorites);
@@ -105,14 +105,13 @@ public class FavoriteController {
 
     @GetMapping("/most-added")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get most added favorited perfumes")
+    @Operation(summary = "Get most added favorited perfumes (Admin only)")
     public ResponseEntity<List<MostAddedProductResponse>> getMostAddedProducts() {
         List<MostAddedProductResponse> perfumes = favoriteService.getMostFavoritedProducts();
         return ResponseEntity.ok(perfumes);
     }
 
     @GetMapping("/my-count")
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get user's favorite count")
     public ResponseEntity<Long> getUserFavoritesCount(Authentication authentication) {
         UserResponse user = userService.getUserByEmail(authentication.getName());
@@ -120,13 +119,13 @@ public class FavoriteController {
         return ResponseEntity.ok(count);
     }
 
-    @GetMapping("/perfume/{perfume}/count")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get user's favorite count")
+    @GetMapping("/perfume/{perfumeId}/count")
+    @Operation(summary = "Get perfume favorite count")
     public ResponseEntity<Long> getUserFavoritesCount(@PathVariable Long perfumeId) {
         Long count = favoriteService.getProductFavoriteCount(perfumeId);
         return ResponseEntity.ok(count);
     }
+
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get all favorites (Admin only)")
