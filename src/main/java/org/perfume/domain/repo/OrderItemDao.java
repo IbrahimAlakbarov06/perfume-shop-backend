@@ -14,7 +14,7 @@ public interface OrderItemDao extends JpaRepository<OrderItem, Long> {
 
     List<OrderItem> findByPerfumeId(Long perfumeId);
 
-    @Query("select oi.perfume.id, oi.productName, SUM(oi.quantity) as totalSold from OrderItem oi group by oi.perfume.id, oi.productName order by totalSold desc ")
+    @Query("select oi.perfume.id, oi.perfume.name, SUM(oi.quantity) as totalSold from OrderItem oi group by oi.perfume.id, oi.perfume.name order by totalSold desc ")
     List<Object[]> findBestSellingProducts();
 
     @Query("select oi from OrderItem oi order by oi.order.createdAt desc ")
@@ -23,7 +23,7 @@ public interface OrderItemDao extends JpaRepository<OrderItem, Long> {
     @Query("select coalesce(sum(oi.quantity), 0) from OrderItem oi where oi.perfume.id = :perfumeId")
     Long getTotalSoldQuantityByPerfumeId(@Param("perfumeId") Long perfumeId);
 
-    @Query("select oi.brandName, sum(oi.quantity) as totalSold, sum(oi.quantity * oi.unitPrice) as totalRevenue " +
-            "from OrderItem oi group by oi.brandName order by totalRevenue desc ")
+    @Query("select oi.perfume.brand.name, sum(oi.quantity) as totalSold, sum(oi.quantity * oi.unitPrice) as totalRevenue " +
+            "from OrderItem oi group by oi.perfume.brand.name order by totalRevenue desc ")
     List<Object[]> findSalesByBrand();
 }

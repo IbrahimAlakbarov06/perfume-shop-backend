@@ -16,8 +16,8 @@ public class OrderItemMapper implements EntityMapper<OrderItem, OrderItemRespons
         }
         return new OrderItemResponse(
                 entity.getId(),
-                entity.getProductName(),
-                entity.getBrandName(),
+                entity.getPerfume().getName(),
+                entity.getPerfume().getBrand().getName(),
                 entity.getQuantity(),
                 entity.getUnitPrice(),
                 entity.getSubtotal()
@@ -32,8 +32,6 @@ public class OrderItemMapper implements EntityMapper<OrderItem, OrderItemRespons
 
         OrderItem entity = new OrderItem();
         entity.setId(dto.getId());
-        entity.setProductName(dto.getProductName());
-        entity.setBrandName(dto.getBrandName());
         entity.setQuantity(dto.getQuantity());
         entity.setUnitPrice(dto.getUnitPrice());
         return entity;

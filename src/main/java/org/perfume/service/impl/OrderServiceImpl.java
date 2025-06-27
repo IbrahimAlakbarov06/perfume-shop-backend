@@ -249,8 +249,6 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setPerfume(cartItem.getPerfume());
             orderItem.setQuantity(cartItem.getQuantity());
             orderItem.setUnitPrice(cartItem.getPerfume().getDiscountedPrice());
-            orderItem.setProductName(cartItem.getPerfume().getName());
-            orderItem.setBrandName(cartItem.getPerfume().getBrand().getName());
 
             orderItemDao.save(orderItem);
         }
@@ -286,8 +284,8 @@ public class OrderServiceImpl implements OrderService {
 
         message.append("🛍 *Products:*\n");
         for (OrderItem item : order.getItems()) {
-            message.append("• ").append(item.getProductName())
-                    .append(" (").append(item.getBrandName()).append(")")
+            message.append("• ").append(item.getPerfume().getName())
+                    .append(" (").append(item.getPerfume().getBrand().getName()).append(")")
                     .append(" - ").append(item.getQuantity()).append(" pcs")
                     .append(" - ").append(item.getUnitPrice()).append(" AZN\n");
         }
@@ -313,8 +311,8 @@ public class OrderServiceImpl implements OrderService {
         StringBuilder details = new StringBuilder();
 
         for (OrderItem item : order.getItems()) {
-            details.append("- ").append(item.getProductName())
-                    .append(" (").append(item.getBrandName()).append(")")
+            details.append("- ").append(item.getPerfume().getName())
+                    .append(" (").append(item.getPerfume().getBrand().getName()).append(")")
                     .append(" - Quantity: ").append(item.getQuantity())
                     .append(" - Unit Price: ").append(item.getUnitPrice()).append(" AZN")
                     .append(" - Total: ").append(item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()))).append(" AZN")

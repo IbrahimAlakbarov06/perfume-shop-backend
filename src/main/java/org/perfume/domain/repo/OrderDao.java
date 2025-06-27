@@ -34,7 +34,7 @@ public interface OrderDao extends JpaRepository<Order, Long> {
     @Query("select o from Order o where o.user.id = :userId order by o.createdAt desc limit 1")
     Optional<Order> findLatestOrderByUserId(@Param("userId") Long userId);
 
-    @Query("select o.user, count (o) as orderCount from Order o group by o.user order by orderCount desc ")
+    @Query("select o.user.id, o.user.name,o.user.email, o.user.phoneNumber, count (o) as orderCount from Order o group by o.user order by orderCount desc ")
     List<Object[]> findTopCustomers(Pageable pageable);
 
     @Query("select coalesce(sum(o.totalAmount), 0) from Order o where o.user.id = :userId")
