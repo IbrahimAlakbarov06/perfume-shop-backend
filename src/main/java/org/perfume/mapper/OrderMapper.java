@@ -15,7 +15,7 @@ public class OrderMapper implements EntityMapper<Order, OrderResponse> {
 
     @Override
     public OrderResponse toDto(Order entity) {
-        if(entity == null){
+        if (entity == null) {
             return null;
         }
 
@@ -35,8 +35,8 @@ public class OrderMapper implements EntityMapper<Order, OrderResponse> {
     }
 
     @Override
-    public Order toEntity(OrderResponse dto){
-        if(dto == null){
+    public Order toEntity(OrderResponse dto) {
+        if (dto == null) {
             return null;
         }
         Order order = new Order();
