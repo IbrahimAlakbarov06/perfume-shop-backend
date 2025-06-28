@@ -6,13 +6,14 @@ import org.perfume.domain.entity.*;
 import org.perfume.domain.repo.*;
 import org.perfume.exception.InvalidInputException;
 import org.perfume.exception.NotFoundException;
+import org.perfume.mapper.OrderItemMapper;
 import org.perfume.mapper.OrderMapper;
 import org.perfume.model.dto.request.OrderRequest;
 import org.perfume.model.dto.response.CheckoutResponse;
+import org.perfume.model.dto.response.OrderItemResponse;
 import org.perfume.model.dto.response.OrderResponse;
 import org.perfume.model.enums.OrderStatus;
 import org.perfume.service.CartService;
-import org.perfume.service.EmailService;
 import org.perfume.service.OrderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -24,8 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +45,7 @@ public class OrderServiceImpl implements OrderService {
     private final PerfumeDao perfumeDao;
     private final OrderMapper orderMapper;
     private final EmailService emailService;
+    private final OrderItemMapper orderItemMapper;
 
     @Value("${app.whatsapp.business-number:994775099979}")
     private String businessWhatsappNumber;
@@ -58,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
 
         validateStockAvailability(cartItems);
 
-        Order order = createOrder(user, orderRequest, cartItems);
+        Order order = createOrderWithItems(user, orderRequest, cartItems);
 
         String whatsappMessage = createWhatsAppMessage(order);
         String whatsappLink = createWhatsAppLink(whatsappMessage);
@@ -78,7 +82,8 @@ public class OrderServiceImpl implements OrderService {
         cartService.clearCart(userId);
         updateProductStock(cartItems);
 
-        OrderResponse orderResponse = orderMapper.toDto(order);
+        Order savedOrderWithItems = orderDao.findByIdWithItems(order.getId());
+        OrderResponse orderResponse = orderMapper.toDto(savedOrderWithItems);
 
         return new CheckoutResponse(
                 "Order created successfully",
@@ -192,14 +197,20 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderItem> getOrderItems(Long orderId) {
-        return orderItemDao.findByOrderId(orderId);
+    public List<OrderItemResponse> getOrderItems(Long orderId) {
+        List<OrderItem> items = orderItemDao.findByOrderId(orderId);
+        return items.stream()
+                .map(orderItemMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderItem> getProductSalesHistory(Long productId) {
-        return orderItemDao.findByPerfumeId(productId);
+    public List<OrderItemResponse> getProductSalesHistory(Long perfumeId) {
+        List<OrderItem> items = orderItemDao.findByPerfumeId(perfumeId);
+        return items.stream()
+                .map(orderItemMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -210,8 +221,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderItem> getRecentSoldProducts() {
-        return orderItemDao.findRecentSoldProducts();
+    public List<OrderItemResponse> getRecentSoldProducts() {
+        List<OrderItem> items = orderItemDao.findRecentSoldProducts();
+        return items.stream()
+                .map(orderItemMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -226,7 +240,7 @@ public class OrderServiceImpl implements OrderService {
         return orderItemDao.findSalesByBrand();
     }
 
-    private Order createOrder(User user, OrderRequest orderRequest, List<CartItem> cartItems) {
+    private Order createOrderWithItems(User user, OrderRequest orderRequest, List<CartItem> cartItems) {
         Order order = new Order();
         order.setUser(user);
         order.setWhatsappNumber(orderRequest.getWhatsappNumber());
@@ -243,6 +257,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderDao.save(order);
 
+        Set<OrderItem> orderItems = new HashSet<>();
         for (CartItem cartItem : cartItems) {
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(savedOrder);
@@ -250,8 +265,11 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setQuantity(cartItem.getQuantity());
             orderItem.setUnitPrice(cartItem.getPerfume().getDiscountedPrice());
 
-            orderItemDao.save(orderItem);
+            OrderItem savedOrderItem = orderItemDao.save(orderItem);
+            orderItems.add(savedOrderItem);
         }
+
+        savedOrder.setItems(orderItems);
 
         return savedOrder;
     }
