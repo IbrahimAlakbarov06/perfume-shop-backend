@@ -19,7 +19,6 @@ import org.perfume.model.enums.FragranceFamily;
 import org.perfume.model.enums.Gender;
 import org.perfume.model.enums.Volume;
 import org.perfume.service.PerfumeService;
-import org.perfume.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

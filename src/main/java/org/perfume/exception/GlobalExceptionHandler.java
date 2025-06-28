@@ -17,10 +17,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleAlreadyExistsException(AlreadyExistsException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder()
-                        .error(ErrorMessage.ALREADY_EXISTS.getDisplayName())
-                        .message(exception.getMessage())
-                        .uuid(UUID.randomUUID())
-                        .timestamp(LocalDateTime.now())
+                .error(ErrorMessage.ALREADY_EXISTS.getDisplayName())
+                .message(exception.getMessage())
+                .uuid(UUID.randomUUID())
+                .timestamp(LocalDateTime.now())
                 .build());
     }
 

@@ -8,7 +8,7 @@ import org.perfume.model.dto.request.*;
 import org.perfume.model.dto.response.AuthResponse;
 import org.perfume.model.dto.response.MessageResponse;
 import org.perfume.model.dto.response.UserResponse;
-import org.perfume.service.AuthService;
+import org.perfume.service.impl.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

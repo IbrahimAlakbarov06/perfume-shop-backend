@@ -9,7 +9,7 @@ import org.perfume.model.dto.response.MessageResponse;
 import org.perfume.model.dto.response.RatingResponse;
 import org.perfume.model.dto.response.UserResponse;
 import org.perfume.service.RatingService;
-import org.perfume.service.UserService;
+import org.perfume.service.impl.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

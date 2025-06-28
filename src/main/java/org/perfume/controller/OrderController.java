@@ -4,14 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.perfume.domain.entity.OrderItem;
 import org.perfume.model.dto.request.OrderRequest;
 import org.perfume.model.dto.response.CheckoutResponse;
+import org.perfume.model.dto.response.OrderItemResponse;
 import org.perfume.model.dto.response.OrderResponse;
 import org.perfume.model.dto.response.UserResponse;
 import org.perfume.model.enums.OrderStatus;
 import org.perfume.service.OrderService;
-import org.perfume.service.UserService;
+import org.perfume.service.impl.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -148,44 +148,44 @@ public class OrderController {
 
     @GetMapping("/{orderId}/items")
     @Operation(summary = "Get order items")
-    public ResponseEntity<List<OrderItem>> getOrderItems(@PathVariable Long orderId) {
-        List<OrderItem> orderItems = orderService.getOrderItems(orderId);
+    public ResponseEntity<List<OrderItemResponse>> getOrderItems(@PathVariable Long orderId) {
+        List<OrderItemResponse> orderItems = orderService.getOrderItems(orderId);
         return ResponseEntity.ok(orderItems);
     }
 
-    @GetMapping("/admin/product/{productId}/sales-history")
+    @GetMapping("/perfume/{perfumeId}/sales-history")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get product sales history (Admin only)")
-    public ResponseEntity<List<OrderItem>> getProductSalesHistory(@PathVariable Long productId) {
-        List<OrderItem> salesHistory = orderService.getProductSalesHistory(productId);
+    @Operation(summary = "Get perfume sales history (Admin only)")
+    public ResponseEntity<List<OrderItemResponse>> getProductSalesHistory(@PathVariable Long perfumeId) {
+        List<OrderItemResponse> salesHistory = orderService.getProductSalesHistory(perfumeId);
         return ResponseEntity.ok(salesHistory);
     }
 
-    @GetMapping("/admin/best-selling-products")
+    @GetMapping("/admin/best-selling-perfumes")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get best selling products (Admin only)")
+    @Operation(summary = "Get best selling perfumes (Admin only)")
     public ResponseEntity<List<Object[]>> getBestSellingProducts() {
         List<Object[]> bestSellingProducts = orderService.getBestSellingProducts();
         return ResponseEntity.ok(bestSellingProducts);
     }
 
-    @GetMapping("/admin/recent-sold-products")
+    @GetMapping("/admin/recent-sold-perfumes")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get recent sold products (Admin only)")
-    public ResponseEntity<List<OrderItem>> getRecentSoldProducts() {
-        List<OrderItem> recentSoldProducts = orderService.getRecentSoldProducts();
+    @Operation(summary = "Get recent sold perfumes (Admin only)")
+    public ResponseEntity<List<OrderItemResponse>> getRecentSoldProducts() {
+        List<OrderItemResponse> recentSoldProducts = orderService.getRecentSoldProducts();
         return ResponseEntity.ok(recentSoldProducts);
     }
 
-    @GetMapping("/admin/product/{productId}/total-sold")
+    @GetMapping("/perfume/{perfumeId}/total-sold")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get product total sold quantity (Admin only)")
-    public ResponseEntity<Long> getProductTotalSold(@PathVariable Long productId) {
-        Long totalSold = orderService.getProductTotalSold(productId);
+    @Operation(summary = "Get perfune total sold quantity (Admin only)")
+    public ResponseEntity<Long> getProductTotalSold(@PathVariable Long perfumeId) {
+        Long totalSold = orderService.getProductTotalSold(perfumeId);
         return ResponseEntity.ok(totalSold);
     }
 
-    @GetMapping("/admin/sales-by-brand")
+    @GetMapping("/sales-by-brand")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get sales statistics by brand (Admin only)")
     public ResponseEntity<List<Object[]>> getSalesByBrand() {

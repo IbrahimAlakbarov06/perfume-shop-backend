@@ -9,7 +9,7 @@ import org.perfume.model.dto.request.UpdatePasswordRequest;
 import org.perfume.model.dto.response.MessageResponse;
 import org.perfume.model.dto.response.UserResponse;
 import org.perfume.model.enums.UserRole;
-import org.perfume.service.UserService;
+import org.perfume.service.impl.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;

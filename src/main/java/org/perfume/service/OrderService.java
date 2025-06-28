@@ -1,8 +1,8 @@
 package org.perfume.service;
 
-import org.perfume.domain.entity.OrderItem;
 import org.perfume.model.dto.request.OrderRequest;
 import org.perfume.model.dto.response.CheckoutResponse;
+import org.perfume.model.dto.response.OrderItemResponse;
 import org.perfume.model.dto.response.OrderResponse;
 import org.perfume.model.enums.OrderStatus;
 import org.springframework.data.domain.Page;
@@ -39,13 +39,13 @@ public interface OrderService {
 
     Long getOrderCountByStatus(OrderStatus status);
 
-    List<OrderItem> getOrderItems(Long orderId);
+    List<OrderItemResponse> getOrderItems(Long orderId);
 
-    List<OrderItem> getProductSalesHistory(Long productId);
+    List<OrderItemResponse> getProductSalesHistory(Long productId);
 
     List<Object[]> getBestSellingProducts();
 
-    List<OrderItem> getRecentSoldProducts();
+    List<OrderItemResponse> getRecentSoldProducts();
 
     Long getProductTotalSold(Long productId);
 

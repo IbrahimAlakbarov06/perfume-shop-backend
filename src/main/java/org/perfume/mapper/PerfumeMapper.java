@@ -29,7 +29,7 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
     private final CategoryDao categoryDao;
     private final RatingDao ratingDao;
     private final OrderDao orderDao;
-    private final FavoriteDao favoriteDao; // Add this dependency
+    private final FavoriteDao favoriteDao;
 
     @Override
     public PerfumeResponse toDto(Perfume entity) {
@@ -64,7 +64,6 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
         response.setRatingCount(entity.getRatingCount());
 
         if (userId != null) {
-            // Check if perfume is favorited by user
             boolean isFavorite = favoriteDao.existsByUserIdAndPerfumeId(userId, entity.getId());
             response.setFavorite(isFavorite);
 
@@ -114,7 +113,6 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
         return response;
     }
 
-    // Add this new method for simple response with user context
     public PerfumeSimpleResponse toSimpleDto(Perfume entity, Long userId) {
         if (entity == null) {
             return null;
@@ -137,7 +135,6 @@ public class PerfumeMapper implements EntityMapper<Perfume, PerfumeResponse> {
         response.setAverageRating(entity.getAverageRating());
         response.setRatingCount(entity.getRatingCount());
 
-        // Check favorite status if userId is provided
         if (userId != null) {
             boolean isFavorite = favoriteDao.existsByUserIdAndPerfumeId(userId, entity.getId());
             response.setFavorite(isFavorite);

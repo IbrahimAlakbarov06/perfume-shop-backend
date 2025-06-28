@@ -18,7 +18,6 @@ public interface CartItemDao extends JpaRepository<CartItem, Long> {
 
     List<CartItem> findByCartId(Long cartId);
 
-
     @Query("select ci from CartItem ci where ci.cart.user.id = :userId")
     List<CartItem> findByUserId(@Param("userId") Long userId);
 

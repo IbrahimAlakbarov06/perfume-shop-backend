@@ -16,7 +16,7 @@ public class CartItemMapper implements EntityMapper<CartItem, CartItemResponse> 
 
     @Override
     public CartItemResponse toDto(CartItem entity) {
-        if(entity == null){
+        if (entity == null) {
             return null;
         }
 
@@ -33,7 +33,7 @@ public class CartItemMapper implements EntityMapper<CartItem, CartItemResponse> 
 
 
     public CartItemSimpleResponse toSimpleDto(CartItem entity) {
-        if(entity == null){
+        if (entity == null) {
             return null;
         }
 
@@ -51,7 +51,7 @@ public class CartItemMapper implements EntityMapper<CartItem, CartItemResponse> 
 
     @Override
     public CartItem toEntity(CartItemResponse dto) {
-        if(dto == null){
+        if (dto == null) {
             return null;
         }
 

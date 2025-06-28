@@ -1,10 +1,8 @@
 package org.perfume.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.perfume.model.enums.OrderStatus;
 
 import java.math.BigDecimal;
@@ -14,10 +12,13 @@ import java.util.Set;
 
 @Entity
 @Table(name = "orders")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = {"user", "items"})
+@EqualsAndHashCode(exclude = {"user", "items"})
 public class Order {
 
     @Id
@@ -26,6 +27,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @Column(name = "total_amount", nullable = false)
@@ -50,7 +52,8 @@ public class Order {
     @Column(name = "customer_notes", columnDefinition = "TEXT")
     private String customerNotes;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<OrderItem> items = new HashSet<>();
 
     @PrePersist
