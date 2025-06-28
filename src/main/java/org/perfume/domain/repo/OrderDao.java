@@ -15,26 +15,31 @@ import java.util.Optional;
 
 @Repository
 public interface OrderDao extends JpaRepository<Order, Long> {
-    List<Order> findByUserIdOrderByCreatedAtDesc(Long userId);
+    @Query("select o from Order o LEFT JOIN FETCH o.items oi LEFT JOIN FETCH oi.perfume p LEFT JOIN FETCH p.brand where o.user.id = :userId order by o.createdAt desc")
+    List<Order> findByUserIdOrderByCreatedAtDesc(@Param("userId") Long userId);
 
-    Page<Order> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+    @Query("select o from Order o LEFT JOIN FETCH o.items oi LEFT JOIN FETCH oi.perfume p LEFT JOIN FETCH p.brand where o.user.id = :userId order by o.createdAt desc")
+    Page<Order> findByUserIdOrderByCreatedAtDesc(@Param("userId") Long userId, Pageable pageable);
 
-    List<Order> findByStatus(OrderStatus status);
+    @Query("select o from Order o LEFT JOIN FETCH o.items oi LEFT JOIN FETCH oi.perfume p LEFT JOIN FETCH p.brand where o.status = :status")
+    List<Order> findByStatus(@Param("status") OrderStatus status);
 
-    List<Order> findByWhatsappNumberContaining(String whatsappNumber);
+    @Query("select o from Order o LEFT JOIN FETCH o.items oi LEFT JOIN FETCH oi.perfume p LEFT JOIN FETCH p.brand where o.whatsappNumber like %:whatsappNumber%")
+    List<Order> findByWhatsappNumberContaining(@Param("whatsappNumber") String whatsappNumber);
 
-    List<Order> findByTotalAmountGreaterThan(BigDecimal amount);
+    @Query("select o from Order o LEFT JOIN FETCH o.items oi LEFT JOIN FETCH oi.perfume p LEFT JOIN FETCH p.brand where o.totalAmount > :amount")
+    List<Order> findByTotalAmountGreaterThan(@Param("amount") BigDecimal amount);
 
-    @Query("select o from Order o LEFT JOIN FETCH o.items where o.id = :orderId")
+    @Query("select o from Order o LEFT JOIN FETCH o.items oi LEFT JOIN FETCH oi.perfume p LEFT JOIN FETCH p.brand where o.id = :orderId")
     Order findByIdWithItems(@Param("orderId") Long orderId);
 
-    @Query("select o from Order o order by o.createdAt desc ")
+    @Query("select o from Order o LEFT JOIN FETCH o.items oi LEFT JOIN FETCH oi.perfume p LEFT JOIN FETCH p.brand order by o.createdAt desc")
     Page<Order> findLatestOrders(Pageable pageable);
 
-    @Query("select o from Order o where o.user.id = :userId order by o.createdAt desc limit 1")
+    @Query("select o from Order o LEFT JOIN FETCH o.items oi LEFT JOIN FETCH oi.perfume p LEFT JOIN FETCH p.brand where o.user.id = :userId order by o.createdAt desc limit 1")
     Optional<Order> findLatestOrderByUserId(@Param("userId") Long userId);
 
-    @Query("select o.user.id, o.user.name,o.user.email, o.user.phoneNumber, count (o) as orderCount from Order o group by o.user order by orderCount desc ")
+    @Query("select o.user.id, o.user.name, o.user.email, o.user.phoneNumber, count(o) as orderCount from Order o group by o.user order by orderCount desc")
     List<Object[]> findTopCustomers(Pageable pageable);
 
     @Query("select coalesce(sum(o.totalAmount), 0) from Order o where o.user.id = :userId")
